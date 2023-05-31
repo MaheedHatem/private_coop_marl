@@ -72,63 +72,31 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
     y = np.concatenate((firstvals, y, lastvals))
     return np.convolve( m[::-1], y, mode='valid')
 
-# results_dirs = {
-#     'Centralized': ['saved_models\\course_results\\coin_gather_2_CentralizedController_DQNAgent_done'],
-#  #   'Decentralized': ['saved_models\\course_results\\coin_gather_2_DecentralizedController_DQNAgent_done'],
-#  #   'Proposed β = 0.5, ζ = 0': 'saved_models\\coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.5_done',
-#     'Proposed old β = 0.8, ζ = 0': ['saved_models\\course_results\\coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done'],
-#     'Proposed β = 0.8, ζ = 0': ['saved_models\\coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8-1',
-#                                 'saved_models\\coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8-2',
-#                                 'saved_models\\coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8-3']
-# }
-
-# results_dirs = {
-#     'Proposed Learned estimated Q or Learned Q': ['saved_models\coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.8_learnedq_done'],
-#     'Proposed Estimator or Learned Q': ['saved_models\coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.8_done'],
-#     'Proposed Estimator or Learned Q 0.95': ['saved_models\\coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.95_done'],
-#     'Proposed Estimator + local Q': ['saved_models\\coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.8_done_both'],
-#     'Decentralized': ['saved_models\coin_gather_3_DecentralizedController_DQNAgent_done'],
-#     'Centralized': ['saved_models\coin_gather_3_CentralizedController_DQNAgent_done']
-
-# }
-
 results_dirs = {
-    #'Proposed learned q': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done'],
-    #'Proposed predictor': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_predictor_done'],
-    'Proposed learned q gamma 0.7': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done_target_predict'],
-    #'Proposed learned q gamma 0.9': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done_0.9'],
-    #'Proposed learned q gamma 0.9 similarity 0': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done_simi_0'],
-    'Proposed learned q gamma 0.9 similarity 1': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done_simi_1'],
-    'Proposed learned q gamma 0.9 similarity 1-2': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done_simi_1-2']
-    #'Proposed learned q gamma 0.9 similarity 2': ['saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done_simi_2']
+    'Proposed Method': [
+        'saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_1',
+        'saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_2',
+        'saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_3'
+        ],
+    'Proposed Method zeta = 0.2': [
+        'saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_1'
+        ],        
+    'Decentralized with true reward': [
+        'saved_models/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_1',
+        'saved_models/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_2',
+        'saved_models/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_3'
+    ],
+    'Centralized':[
+        'saved_models/coin_gather_2_CentralizedController_DQNAgent_done_1'
+    ]
+
 
 }
-
-# results_dirs = {
-#     'Proposed β = 0.8, ζ = 0': 'coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done',
-#    'Proposed β = 0.8, ζ = 0.2': 'coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.8_done',
-#    'Proposed β = 0.8, ζ = 0.4' : 'coin_gather_2_DecentralizedController_DQNRewardAgent_0.4_0.8_done',
-#    'Proposed β = 0.8, ζ = 0.8' : 'coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.8_done'
-# }
-# results_dirs = {
-#     'Centralized': 'coin_gather_3_CentralizedController_DQNAgent_done',
-#     'Decentralized': 'coin_gather_3_DecentralizedController_DQNAgent_done',
-#     'Proposed β = 0.8, ζ = 0': 'coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.8_done'
-# }
-
-# results_dirs = {
-#     'Centralized': 'coin_gather_3_CentralizedController_DQNAgent',
-#     'Decentralized': 'coin_gather_3_DecentralizedController_DQNAgent',
-#     'Proposed β = 0.8, ζ = 0': 'coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.8'
-# }
-# results_dirs = {
-#     'Centralized': 'coin_gather_5_CentralizedController_DQNAgent_done',
-#     'Proposed β = 0.8': 'coin_gather_5_DecentralizedController_DQNRewardAgent_0.0_0.8_done',
-# }
 scores = {}
 ci = {}
 steps = []
-for label, results_paths in results_dirs.items():
+colors = ['b', 'g', 'r', 'orange']
+for i, (label, results_paths) in enumerate(results_dirs.items()):
     results = []
     for result_dir in results_paths:
         results.append(np.loadtxt(f"{result_dir}/results.csv", delimiter=','))
@@ -143,11 +111,11 @@ for label, results_paths in results_dirs.items():
     indices = range(0,len(steps),1)
     #plt.plot(steps[indices], savitzky_golay(scores[label][indices,column], 51, 3), label=label)
     column = 1
-    plt.plot(steps[indices], scores[label][indices,column], label=label)
-    plt.fill_between(steps[indices], (scores[label][indices,column]-ci[label][indices,column]), (scores[label][indices,column]+ci[label][indices,column]), color='b', alpha=.1)
+    plt.plot(steps[indices], scores[label][indices,column], label=label, color=colors[i])
+    plt.fill_between(steps[indices], (scores[label][indices,column]-ci[label][indices,column]), (scores[label][indices,column]+ci[label][indices,column]), color=colors[i], alpha=.1)
     plt.xlabel("Training Step")
-    plt.ylabel("Total average reward of all agents")
-    plt.title("Three agents with four levers, a general setup")
+    plt.ylabel("Average total reward of all agents")
+    plt.title("Two agents with locally ineffective levers")
     
 plt.legend()
 plt.savefig('Figure.png')

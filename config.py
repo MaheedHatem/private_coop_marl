@@ -26,6 +26,9 @@ class Config:
         self.controller = 'DecentralizedController'
         self.agent = 'DQNRewardAgent'
         self.reward_sharing = self.agent == 'DQNRewardAgent'
+        self.true_reward = False
+        if self.true_reward:
+            assert self.controller == 'DecentralizedController' and self.agent == 'DQNAgent'
         if self.reward_sharing:
             assert self.controller == 'DecentralizedController'
         #self.use_state = False
@@ -84,15 +87,17 @@ class Config:
         
         self.reward_hidden_layers = [32,32]
         self.N_predictors = 3
-        self.perturb_prob = 0.0
+        self.perturb_prob = 0.2
         self.reward_lr = self.lr
 
         self.trajectory_length = 10
         self.pairs_count = 32
         self.trajectory_buffer_size = self.replay_size // self.trajectory_length // 10
-        self.similarity = 1
-        self.reward_weighting = 0.8
+        self.similarity = 0.25
+        self.reward_weighting = 0.7
 
         self.save_dir = f"saved_models/{envs_names[env_name_index]}_{self.N_agents}_{self.controller}_{self.agent}"
+        if self.true_reward:
+            self.save_dir += '_true_reward'
         if self.reward_sharing:
             self.save_dir += f'_{self.perturb_prob}_{self.reward_weighting}'

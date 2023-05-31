@@ -4,13 +4,14 @@ from config import Config
 from itertools import chain
 from misc import get_model
 import numpy as np
+import torch.nn as nn
 
 class RewardPredictor(nn.Module):
     def __init__(self, obs_dim: int, act_dim: int, config: Config):
         super().__init__()
         self.device = config.device
         self.act_dim = act_dim
-        self.models = [get_model(np.product(obs_dim)+self.act_dim, config.reward_hidden_layers + [1], cnn=config.cnn).to(self.device) for _ in range(config.N_predictors)]
+        self.models = [get_model(np.product(obs_dim)+self.act_dim, config.reward_hidden_layers + [1], cnn=config.cnn, output_activation=nn.Tanh()).to(self.device) for _ in range(config.N_predictors)]
         #self.models = [get_model(np.product(obs_dim)+1, config.reward_hidden_layers + [1], cnn=config.cnn).to(self.device) for _ in range(config.N_predictors)]
         self.optimizer = torch.optim.Adam(chain(*[model.parameters() for model in self.models]), lr=config.reward_lr)
 

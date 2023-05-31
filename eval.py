@@ -64,7 +64,7 @@ if __name__ == '__main__':
     env.close()
     total_steps = config.total_steps//config.steps_per_epoch
     scores = np.zeros((total_steps,3 + len(agents_names)))
-    model_dir = 'saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.8_done_simi_1-2'
+    model_dir = 'saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_1'
     for index in range(total_steps):
         controller.load_models(model_dir, index)
         res = evaluate_env(controller, config, 100)

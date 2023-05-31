@@ -24,6 +24,7 @@ class DecentralizedController(BaseController):
         if self.reward_sharing:
             self.trajectory_server = TrajectoryServer(config, self.agents, rng)
             self.reward_weighting = config.reward_weighting
+        self.true_reward = config.true_reward
 
     def insert_experience(self, obs: Dict[str, np.ndarray], act: Dict[str, np.ndarray], 
         next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :[str, np.ndarray], sample_id: int):
@@ -32,6 +33,10 @@ class DecentralizedController(BaseController):
             combined_next_obs = np.concatenate([next_obs[name] for name in self.names])
         if self.reward_sharing:
             self.trajectory_server.insert_sample(sample_id)
+
+        if self.true_reward:
+            reward = np.sum(np.array([rews[name] for name in self.names]))
+            rews = {name: reward for name in self.names}
         for name in self.names:
             if self.use_full_obs:
                 self.agents[name].insert_experience(combined_obs, act[name], combined_next_obs, rews[name], done[name], sample_id)
