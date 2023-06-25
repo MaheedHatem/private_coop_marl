@@ -17,7 +17,7 @@ class BaseController:
     def get_action(self, obs: Dict[str, np.ndarray], deterministic: bool = False) -> Dict[str, np.ndarray]:
         raise NotImplementedError()
 
-    def train(self, number_of_batches: int, train_pred: bool = True, update_target: bool = False):
+    def train(self, number_of_batches: int, step: int):
         raise NotImplementedError()
 
     def update_epsilon(self, step: int):
@@ -27,4 +27,7 @@ class BaseController:
         raise NotImplementedError()
 
     def load_models(self, save_dir: str, step: int):
+        raise NotImplementedError()
+
+    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
         raise NotImplementedError()

@@ -13,6 +13,8 @@ class DQNAgent(BaseAgent):
                 self.q_network = get_model(obs_dim, config.hidden_layers + [act_dim], cnn=config.cnn).to(self.config.device)
                 self.target_network = deepcopy(self.q_network).to(self.config.device).to(self.config.device)
                 self.optimizer = torch.optim.Adam(self.q_network.parameters(), self.config.lr)
+                self.epsilon = config.init_epsilon
+                self.target_update_every = config.target_update_every
 
     def get_action(self, obs: np.ndarray, determenistic=False) -> int:
         with torch.no_grad():
@@ -47,8 +49,12 @@ class DQNAgent(BaseAgent):
                     p_targ.data.copy_((1-self.config.target_update)* p_targ.data + 
                         self.config.target_update * p.data)
 
-    def train(self, number_of_batches: int, update_target: bool = False):
-        self.train_q_network(number_of_batches, self.q_network, self.target_network, self.get_targets, self.optimizer, update_target)
+    
+    def update_epsilon(self, step: int):
+        self.epsilon = max(self.config.final_epsilon, self.config.init_epsilon + step * (self.config.final_epsilon - self.config.init_epsilon)/self.config.random_steps)
+
+    def train(self, number_of_batches: int, step: int):
+        self.train_q_network(number_of_batches, self.q_network, self.target_network, self.get_targets, self.optimizer, step%self.target_update_every==0)
 
     def save(self, save_dir: str, name: str, step: int):
         torch.save(self.q_network.state_dict(), f"{save_dir}/{name}_q{step}.pth")

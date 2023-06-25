@@ -7,6 +7,7 @@ import time
 from matplotlib import pyplot as plt
 import gym
 import time
+import argparse
 
 def evaluate_env(controller: BaseController, config: Config, episodes: int) -> Dict[str, np.ndarray]:
     env = config.env(**config.env_args)
@@ -29,7 +30,7 @@ def evaluate_env(controller: BaseController, config: Config, episodes: int) -> D
             actions = controller.get_action(obs, True)
             for name in agents_names:
                 act_count[name][actions[name]] += 1
-            obs, rewards, terminations, truncations, infos = config.step(env.step(actions))
+            obs, rewards, terminations, truncations, infos = config.step(env.step(config.preprocess_action(actions)))
             for name in agents_names:
                 episode_rewards[name].append(rewards[name])
             for i, name in enumerate(agents_names):
@@ -51,7 +52,11 @@ def evaluate_env(controller: BaseController, config: Config, episodes: int) -> D
     return {name: rews[name].mean() for name in rews.keys()}
 
 if __name__ == '__main__':
-    config = Config()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config")
+    parser.add_argument("directory")
+    args = parser.parse_args()
+    config = get_config(args.config)
     env = config.env(**config.env_args)
     env.reset()
     rng = np.random.default_rng()
@@ -64,7 +69,7 @@ if __name__ == '__main__':
     env.close()
     total_steps = config.total_steps//config.steps_per_epoch
     scores = np.zeros((total_steps,3 + len(agents_names)))
-    model_dir = 'saved_models/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_1'
+    model_dir = args.directory
     for index in range(total_steps):
         controller.load_models(model_dir, index)
         res = evaluate_env(controller, config, 100)

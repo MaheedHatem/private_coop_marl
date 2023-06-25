@@ -25,6 +25,7 @@ class DecentralizedController(BaseController):
             self.trajectory_server = TrajectoryServer(config, self.agents, rng)
             self.reward_weighting = config.reward_weighting
         self.true_reward = config.true_reward
+        self.update_predictor_steps = config.update_predictor_steps
 
     def insert_experience(self, obs: Dict[str, np.ndarray], act: Dict[str, np.ndarray], 
         next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :[str, np.ndarray], sample_id: int):
@@ -51,8 +52,8 @@ class DecentralizedController(BaseController):
         else:
             return {name: self.agents[name].get_action(obs[name], deterministic) for name in self.names}
     
-    def train(self, number_of_batches: int, train_pred: bool = True, update_target: bool = False):
-        if self.reward_sharing and train_pred:
+    def train(self, number_of_batches: int, step: int):
+        if self.reward_sharing and step < self.update_predictor_steps:
             for batch in range(number_of_batches):
                 trajectories_a, trajectories_b, votes = self.trajectory_server.get_votes()
                 if len(self.agents.values()) > 1:
@@ -66,7 +67,7 @@ class DecentralizedController(BaseController):
                         agent.train_predictor(trajectories_a, trajectories_b, ratio)
 
         for agent in self.agents.values():
-            agent.train(number_of_batches, update_target)
+            agent.train(number_of_batches, step)
 
     def update_epsilon(self, step: int):
        for agent in self.agents.values():
@@ -79,3 +80,7 @@ class DecentralizedController(BaseController):
     def load_models(self, save_dir: str, step: int):
         for name in self.names:
             self.agents[name].load(save_dir, name, step)
+
+    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
+        for name in self.names:
+            self.agents[name].finish_path(obs[name], truncated)

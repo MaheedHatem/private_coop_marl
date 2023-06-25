@@ -1,0 +1,26 @@
+results_dirs :
+  Proposed Method:
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_1'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_2'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_3'
+  Proposed Method zeta = 0.2: 
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_1'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_2'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_3'
+  Proposed Method zeta = 0.4: 
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.4_0.7_done_1'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.4_0.7_done_2'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.4_0.7_done_3'
+  Proposed Method zeta = 0.8: 
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_1'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_2'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_3'
+  Decentralized with true reward: 
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_1'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_2'
+      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_3'
+  Centralized: 
+      - 'saved_models/coin_2/coin_gather_2_CentralizedController_DQNAgent_done_1'
+plt_title: "Two Agents with Locally Ineffective Levers"
+x_label: "Training step"
+y_label: "Average returns of all agents"

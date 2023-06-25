@@ -49,8 +49,8 @@ class CentralizedController(BaseController):
     def get_action(self, obs: Dict[str, np.ndarray], deterministic: bool = False) -> Dict[str, np.ndarray]:
         return self.decentralized_action(self.agents.get_action(np.concatenate([obs[name] for name in self.names]), deterministic))
     
-    def train(self, number_of_batches: int, train_pred: bool = True, update_target: bool = False):
-        self.agents.train(number_of_batches, update_target)
+    def train(self, number_of_batches: int, step: int):
+        self.agents.train(number_of_batches, step)
 
     def update_epsilon(self, step: int):
         self.agents.update_epsilon(step)
@@ -60,3 +60,6 @@ class CentralizedController(BaseController):
 
     def load_models(self, save_dir: str, step: int):
         self.agents.load(save_dir, 'central', step)
+
+    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
+        self.agents.finish_path(obs, truncated)

@@ -7,10 +7,14 @@ from matplotlib import pyplot as plt
 import gym
 import time
 from pathlib import Path
+import argparse
 from eval import evaluate_env
 
 if __name__ == '__main__':
-    config = Config()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config")
+    args = parser.parse_args()
+    config = get_config(args.config)
     Path(config.save_dir).mkdir(parents=True, exist_ok=True)
     env = config.env(**config.env_args)
     obs = env.reset()
@@ -28,21 +32,26 @@ if __name__ == '__main__':
     start_time = time.time()
     for global_step in range(config.total_steps+1):
         controller.update_epsilon(global_step)
-        actions = controller.get_action(obs)
-        next_obs, rewards, terminations, truncations, infos = config.step(env.step(actions))
 
+        if (global_step > config.update_after) and (global_step % config.train_every) == 0:
+            controller.train(config.train_batches, step=global_step) 
+
+        actions = controller.get_action(obs)
+        next_obs, rewards, terminations, truncations, infos = config.step(env.step(config.preprocess_action(actions)))
         for i, name in enumerate(agents_names):
             finished[i] = terminations[name] or truncations[name]
         controller.insert_experience(obs, actions, next_obs, rewards, terminations, sample_id)
         obs = next_obs
         sample_id = (sample_id + 1) % config.replay_size
 
-        if (global_step > config.update_after) and (global_step % config.train_every) == 0:
-            controller.train(config.train_batches, train_pred = global_step < config.update_predictor_steps,
-                update_target=global_step%config.target_update_every==0) 
+
+        if(np.all(finished) or (global_step > config.update_after) and (global_step % config.train_every) == 0):
+            controller.finish_path(obs, ((global_step > config.update_after) and (global_step % config.train_every) == 0) or np.all(truncations))
+        if np.all(finished):
+            obs = env.reset()
+
         
-        if(np.all(finished)):
-            env.reset()
+
         if(global_step % config.steps_per_epoch == 0):
             print(f"Step {global_step}/{config.total_steps}")
             print(evaluate_env(controller, config, config.eval_episodes))

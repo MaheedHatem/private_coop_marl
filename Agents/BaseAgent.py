@@ -1,6 +1,6 @@
 from misc.ReplayBuffer import ReplayBuffer
 from config import Config
-from typing import Tuple
+from typing import Tuple, Dict
 import numpy as np
 import torch
 import torch.nn as nn
@@ -15,10 +15,9 @@ class BaseAgent(nn.Module):
         self.obs_dim = obs_dim
         self.act_dim = act_dim
         self.replay = ReplayBuffer(obs_dim, config.replay_size, 
-            config.batch_size, rng)
+            config.batch_size, config.gamma, rng)
         self.name = name
         self.config = config
-        self.epsilon = config.init_epsilon
         self.perturb_prob = config.perturb_prob
 
     def get_action(self, obs: np.ndarray, determenistic=False) -> int:
@@ -51,14 +50,17 @@ class BaseAgent(nn.Module):
                 #preference[i] = self.rng.random()
         return preference
 
-    def train(self, number_of_batches: int, update_target: bool = False):
+    def train(self, number_of_batches: int, step: int):
         raise NotImplementedError()
 
     def update_epsilon(self, step: int):
-        self.epsilon = max(self.config.final_epsilon, self.config.init_epsilon + step * (self.config.final_epsilon - self.config.init_epsilon)/self.config.random_steps)
+        pass
 
     def save(self, save_dir: str, name: str, step: int):
         raise NotImplementedError()
 
     def load(self, save_dir: str, name: str, step: int):
         raise NotImplementedError()
+
+    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
+        pass

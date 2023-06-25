@@ -58,9 +58,9 @@ class DQNRewardAgent(DQNAgent):
         self.predictor.train(self.replay.get_obs(trajectory_a), self.replay.get_obs(trajectory_b), 
             self.replay.get_act(trajectory_a), self.replay.get_act(trajectory_b), ratio)
 
-    def train(self, number_of_batches: int, update_target: bool = False):
-        self.train_q_network(number_of_batches, self.q_network, self.target_network, self.get_targets, self.optimizer, update_target)
-        self.train_q_network(number_of_batches, self.other_q, self.other_target, self.get_targets_predicted, self.other_optimizer, update_target)
+    def train(self, number_of_batches: int, step: int):
+        self.train_q_network(number_of_batches, self.q_network, self.target_network, self.get_targets, self.optimizer,  step%self.target_update_every==0)
+        self.train_q_network(number_of_batches, self.other_q, self.other_target, self.get_targets_predicted, self.other_optimizer, step%self.target_update_every==0)
 
     def save(self, save_dir: str, name: str, step: int):
         torch.save(self.q_network.state_dict(), f"{save_dir}/{name}_q{step}.pth")
