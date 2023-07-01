@@ -15,11 +15,9 @@ def get_config(config_file):
 
 class Config:
     def __init__(self, data):
-
-
         self.controller = data['controller']
         self.agent = data['agent']
-        self.reward_sharing = self.agent == 'DQNRewardAgent'
+        self.reward_sharing = self.agent == 'DQNRewardAgent' or self.agent =='ACRewardAgent'
         self.true_reward = data['true_reward']
         if self.true_reward:
             assert self.controller == 'DecentralizedController' and self.agent == 'DQNAgent'
@@ -39,7 +37,7 @@ class Config:
         self.total_steps = data['total_steps']
         self.steps_per_epoch = data['steps_per_epoch']
         self.update_predictor_steps = self.total_steps
-        if self.agent == 'ACAgent':
+        if self.agent == 'ACAgent' or self.agent == 'ACRewardAgent':
             self.value_coef = data['value_coef']
             self.entropy_coef = data['entropy_coef']
         else:
@@ -86,8 +84,10 @@ class Config:
                 # self.cnn = [(3, 6, 3)]
             else:
                 self.max_food = data['max_food']
+                coop = data.get('coop', '')
+                grid_size = data['grid_size']
                 self.env = lambda **args: gym.make(
-                    f'Foraging-12x12-{self.N_agents}p-{self.max_food}f-v2', 
+                    f'Foraging-{grid_size}x{grid_size}-{self.N_agents}p-{self.max_food}f{coop}-v2', 
                         **args
                     )      
                 self.get_act_space = lambda env, names: {name: env.action_space[name].n for name in names}
@@ -100,17 +100,20 @@ class Config:
 
         self.render_last_episode = data['render_last_episode']
 
-        
-        self.reward_hidden_layers = data['reward_hidden_layers']
-        self.N_predictors = data['N_predictors']
-        self.perturb_prob = data['perturb_prob']
-        self.reward_lr = data['reward_lr']
+        if self.reward_sharing:
+            self.trajectory_database = data['trajectory_database']
+            self.reward_hidden_layers = data['reward_hidden_layers']
+            self.N_predictors = data['N_predictors']
+            self.perturb_prob = data['perturb_prob']
+            self.reward_lr = data['reward_lr']
 
-        self.trajectory_length = data['trajectory_length']
-        self.pairs_count = data['pairs_count']
-        self.trajectory_buffer_size = self.replay_size // self.trajectory_length // 10
-        self.similarity = data['similarity']
-        self.reward_weighting = data['reward_weighting']
+            self.trajectory_length = data['trajectory_length']
+            self.pairs_count = data['pairs_count']
+            self.trajectory_buffer_size = self.trajectory_database // self.trajectory_length // data['trajectory_buffer_ratio']
+            self.similarity = data['similarity']
+            self.reward_weighting = data['reward_weighting']
+        else:
+            self.trajectory_database = self.replay_size
 
         self.save_dir = f"saved_models/{envs_names[env_name_index]}_{self.N_agents}_{self.controller}_{self.agent}"
         if self.true_reward:

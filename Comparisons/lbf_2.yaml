@@ -1,6 +1,8 @@
 results_dirs :
   Proposed Method:
-      - 'saved_models/lbf_2_DecentralizedController_DQNRewardAgent_0.0_0.7'
+      - 'saved_models/lbf_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done'
+  Proposed Method 0.5:
+     - 'saved_models/lbf_2_DecentralizedController_DQNRewardAgent_0.0_0.5'
   SEAC: 
       - 'saved_models/lbf_2_seac'
   IAC: 
@@ -8,7 +10,7 @@ results_dirs :
   Decentralized: 
       - 'saved_models/lbf_2_DecentralizedController_DQNAgent'
   Centralized: 
-      - 'saved_models/lbf_2_CentralizedController_DQNAgent'
+      - 'saved_models/lbf_2_CentralizedController_DQNAgent_done'
 plt_title: "Two Agents with One Food"
 x_label: "Training step"
 y_label: "Average returns of all agents"

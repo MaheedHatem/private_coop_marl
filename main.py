@@ -42,10 +42,10 @@ if __name__ == '__main__':
             finished[i] = terminations[name] or truncations[name]
         controller.insert_experience(obs, actions, next_obs, rewards, terminations, sample_id)
         obs = next_obs
-        sample_id = (sample_id + 1) % config.replay_size
+        sample_id = (sample_id + 1) % config.trajectory_database
 
 
-        if(np.all(finished) or (global_step > config.update_after) and (global_step % config.train_every) == 0):
+        if(np.all(finished) or (global_step % config.train_every) == 0):
             controller.finish_path(obs, ((global_step > config.update_after) and (global_step % config.train_every) == 0) or np.all(truncations))
         if np.all(finished):
             obs = env.reset()

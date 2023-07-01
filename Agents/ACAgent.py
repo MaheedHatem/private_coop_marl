@@ -29,13 +29,15 @@ class ACAgent(BaseAgent):
             return self.critic(torch.unsqueeze(obs, 0)).detach().numpy().item()
 
 
-    def train_critic(self, critic: nn.Module, optimizer: torch.optim.Adam, batches: List[Tuple[np.ndarray]]):
+    def train_critic(self, critic: nn.Module, optimizer: torch.optim.Adam, batches: List[Tuple[np.ndarray]], use_other_ret: bool = False):
         advantages = []
         for batch in batches:
             batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
-            obs, act, rewards, done, ret = batch
+            obs, act, rewards, done, ret, other_ret = batch
             batch_idx = torch.arange(len(act)).long()
             optimizer.zero_grad()
+            if use_other_ret:
+                ret = other_ret
             adv = ret - critic(obs)
             loss = self.val_coef * ((adv)**2)
             loss = loss.mean()
@@ -47,7 +49,7 @@ class ACAgent(BaseAgent):
     def train_actor(self, actor: nn.Module, optimizer: torch.optim.Adam, batches: List[Tuple[np.ndarray]], advantages: List[torch.Tensor]):
         for batch, adv in zip(batches, advantages):
             batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
-            obs, act, rewards, done, ret = batch
+            obs, act, rewards, done, ret, _ = batch
             batch_idx = torch.arange(len(act)).long()
             optimizer.zero_grad()
             act_prob , entropy = actor.get_act_prob(obs, act)
@@ -70,7 +72,7 @@ class ACAgent(BaseAgent):
         self.actor.load_state_dict(torch.load(f"{save_dir}/{name}_actor{step}.pth"))
 
     def finish_path(self, obs: np.ndarray, truncated: bool):
-        last_value = 0
+        last_value = 0.0
         if(truncated):
             last_value = self.get_value(obs)
         self.replay.finish_path(last_value)

@@ -14,11 +14,12 @@ class BaseAgent(nn.Module):
         self.rng = rng
         self.obs_dim = obs_dim
         self.act_dim = act_dim
-        self.replay = ReplayBuffer(obs_dim, config.replay_size, 
+        self.replay = ReplayBuffer(obs_dim, config.replay_size, config.trajectory_database,
             config.batch_size, config.gamma, rng)
         self.name = name
         self.config = config
-        self.perturb_prob = config.perturb_prob
+        if config.reward_sharing:
+            self.perturb_prob = config.perturb_prob
 
     def get_action(self, obs: np.ndarray, determenistic=False) -> int:
         raise  NotImplementedError()
@@ -64,3 +65,4 @@ class BaseAgent(nn.Module):
 
     def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
         pass
+    
