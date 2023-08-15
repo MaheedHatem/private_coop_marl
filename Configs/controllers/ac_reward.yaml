@@ -3,31 +3,19 @@ gamma: 0.9
 lr: &lr_val 3.0e-4
 train_every: 100
 train_batches: 1
-update_after: 1
+update_after: 1000
 batch_size: 100
-total_steps: 5000000
-steps_per_epoch: 10000
 value_coef: 0.5
 entropy_coef: 0.01
 
 controller: 'DecentralizedController'
-agent: 'ACAgent'
+agent: 'ACRewardAgent'
 true_reward: False
 use_full_obs: False
 device: 'cpu'
+hidden_layers: &hidden [64, 64]
 
-env_name_index: 3
-env_count: 4
-N_agents: 2
-env_args: 
-  max_episode_steps: 25
-max_food: 2
-grid_size: 12
-hidden_layers: [64, 64]
-eval_episodes: 2
-render_last_episode: False
-
-reward_hidden_layers: [32,32]
+reward_hidden_layers: *hidden
 N_predictors: 3
 perturb_prob: 0.0
 reward_lr: *lr_val
@@ -35,4 +23,5 @@ reward_lr: *lr_val
 trajectory_length: 10
 pairs_count: 32
 similarity: 0.25
-reward_weighting: 0.7
+trajectory_database: 10000
+reward_weighting: 0.9

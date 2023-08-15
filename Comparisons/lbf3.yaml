@@ -1,0 +1,13 @@
+results_dirs :
+  Proposed Method:
+      - 'saved_models/lbf_3_DecentralizedController_DQNRewardAgent_0.0_0.5'
+  Decentralized: 
+      - 'saved_models/lbf_3_DecentralizedController_DQNAgent'
+  Decentralized True Reward: 
+      - 'saved_models/lbf_3_DecentralizedController_DQNAgent_true_reward'
+  SEAC:
+      - 'saved_models/lbf_3_seac'
+    
+plt_title: "Three Agents with three Food"
+x_label: "Training step"
+y_label: "Average returns of all agents"

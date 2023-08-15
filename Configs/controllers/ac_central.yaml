@@ -1,0 +1,16 @@
+replay_size: 100
+gamma: 0.9
+lr: &lr_val 3.0e-4
+train_every: 100
+train_batches: 1
+update_after: 1000
+batch_size: 100
+value_coef: 0.5
+entropy_coef: 0.01
+
+controller: 'DecentralizedController'
+agent: 'ACAgent'
+true_reward: False
+use_full_obs: False
+device: 'cpu'
+hidden_layers: [64, 64]

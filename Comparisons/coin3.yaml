@@ -1,0 +1,13 @@
+results_dirs :
+  Proposed Method:
+      - 'saved_models/coin_2/coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.7'
+  Decentralized: 
+      - 'saved_models/coin_2/coin_gather_3_DecentralizedController_DQNAgent'
+  SEAC:
+      - 'saved_models/coin_2/coin_gather_3_seac'
+  # Centralized: 
+  #     - 'saved_models/coin_2/coin_gather_3_CentralizedController_DQNAgent'
+plt_title: "Three Agents"
+column: 1
+x_label: "Training step"
+y_label: "Average returns of all agents"

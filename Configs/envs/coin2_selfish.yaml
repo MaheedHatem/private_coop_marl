@@ -1,0 +1,13 @@
+env_name_index: 2
+N_agents: &n_agents 2
+env_args:
+  grid_width: 2
+  grid_height: 9
+  N: *n_agents
+  max_episode_steps: 100
+  levers_prob_self: [[0, 0, 0, 1], [0, 0, 0, 1]]
+  levers_prob_other: [[1, 0, 0, 0], [0, 1, 0, 0]]
+total_steps: 3000000
+steps_per_epoch: 10000
+eval_episodes: 2
+render_last_episode: False

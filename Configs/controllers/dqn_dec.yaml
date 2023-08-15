@@ -1,0 +1,19 @@
+replay_size: &replay_size 100000
+gamma: 0.9
+lr: &lr_val 3.0e-4
+train_every: 10
+train_batches: 1
+update_after: 10000
+batch_size: 128
+random_steps_fraction: 0.5
+init_epsilon: 1
+final_epsilon: 0.1
+target_update: 1
+target_update_every: 500
+
+controller: 'DecentralizedController'
+agent: 'DQNAgent'
+true_reward: False
+use_full_obs: False
+device: 'cpu'
+hidden_layers: [64, 64]

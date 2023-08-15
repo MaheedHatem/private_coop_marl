@@ -47,11 +47,11 @@ class DQNRewardAgent(DQNAgent):
             return predicted_reward + (1 - done) * self.config.gamma * target_net(next_obs).max(dim=-1).values
 
     def get_scores(self, trajectories: np.ndarray) -> np.ndarray:
+        scores = super().get_scores(trajectories)
         trajectories = torch.as_tensor(self.replay.get_obs(trajectories)).to(self.config.device)
         with torch.no_grad():
-            scores = self.target_network(trajectories.view(-1, *trajectories.shape[2:])).max(dim=-1).values
-            scores = scores.view(trajectories.shape[0], trajectories.shape[1])
-            scores = scores.sum(dim=-1)
+            trajectories = trajectories.index_select(1, torch.tensor([trajectories.shape[1]-1]))
+            scores = self.target_network(trajectories).max(dim=-1).values + scores
             return scores
 
     def train_predictor(self, trajectory_a: np.ndarray, trajectory_b: np.ndarray, ratio: np.ndarray):

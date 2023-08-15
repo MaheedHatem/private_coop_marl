@@ -22,6 +22,8 @@ class ACRewardAgent(ACAgent):
     def get_action(self, obs: np.ndarray, determenistic=False) -> int:
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
+            dist = self.actor.get_distribution(torch.unsqueeze(obs, 0))
+            return dist.sample().detach().numpy().item()
             if self.rng.random() < self.reward_weighting:
                 dist = self.actor.get_distribution(torch.unsqueeze(obs, 0))
                 return dist.sample().detach().numpy().item()
@@ -38,9 +40,9 @@ class ACRewardAgent(ACAgent):
         batches = self.replay.get_data()
         adv = self.train_critic(self.critic, self.critic_optimizer, batches)
         other_adv = self.train_critic(self.other_critic, self.other_critic_optimizer, batches, True)
-        #combined_adv = [self.reward_weighting * a + (1 - self.reward_weighting) * oa for a, oa in zip(adv, other_adv)]
-        self.train_actor(self.actor, self.actor_optimizer, batches, adv)
-        self.train_actor(self.other_actor, self.other_actor_optimizer, batches, other_adv)
+        combined_adv = [self.reward_weighting * a + (1 - self.reward_weighting) * oa for a, oa in zip(adv, other_adv)]
+        self.train_actor(self.actor, self.actor_optimizer, batches, combined_adv)
+        #self.train_actor(self.other_actor, self.other_actor_optimizer, batches, other_adv)
 
     def save(self, save_dir: str, name: str, step: int):
         torch.save(self.critic.state_dict(), f"{save_dir}/{name}_critic{step}.pth")
@@ -64,11 +66,11 @@ class ACRewardAgent(ACAgent):
         super().insert_experience(obs, act, next_obs, reward, done, sample_id)
 
     def get_scores(self, trajectories: np.ndarray) -> np.ndarray:
+        scores = super().get_scores(trajectories)
         trajectories = torch.as_tensor(self.replay.get_obs(trajectories)).to(self.config.device)
         with torch.no_grad():
-            scores = self.critic(trajectories.view(-1, *trajectories.shape[2:]))
-            scores = scores.view(trajectories.shape[0], trajectories.shape[1])
-            scores = scores.sum(dim=-1)
+            trajectories = trajectories.index_select(1, torch.tensor([trajectories.shape[1]-1]))
+            scores = self.critic(trajectories).squeeze() + scores
             return scores
 
     def train_predictor(self, trajectory_a: np.ndarray, trajectory_b: np.ndarray, ratio: np.ndarray):

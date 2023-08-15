@@ -80,7 +80,7 @@ class ReplayBuffer():
         return self.obs[index], self.act[index], self.next_obs[index], self.rewards[index], self.done[index]
 
     def get_data(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        assert self.size == self.max_size
+        assert self.size == self.max_size and self.cur == 0
         self.size = 0
         self.cur = 0
         batches_count = int(self.max_size/self.batch_size)
@@ -108,7 +108,11 @@ class ReplayBuffer():
             other_val = last_val[1]
             last_val = last_val[0]
             both_rewards = True
-        path_slice = slice(self.path_start, self.cur)
+        path_end = self.cur
+        if self.cur == 0 and self.size == self.max_size:
+            path_end = self.max_size
+        assert(self.path_start < path_end, f"path_start {self.path_start}, path_end {path_end}")
+        path_slice = slice(self.path_start, path_end)
         rews = np.append(self.rewards[path_slice], last_val)
         if both_rewards:
             other_rews = np.append(self.other_rewards[path_slice], other_val)

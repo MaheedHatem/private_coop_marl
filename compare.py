@@ -18,16 +18,16 @@ if __name__ == '__main__':
     scores = {}
     ci = {}
     steps = []
-    colors = ['b', 'g', 'r', 'orange', 'purple', 'grey']
+    colors = ['b', 'g', 'r', 'orange', 'purple', 'grey', 'black']
     for i, (label, results_paths) in enumerate(results_dirs.items()):
         results = []
         for result_dir in results_paths:
             results.append(np.loadtxt(f"{result_dir}/results.csv", delimiter=','))
         results = np.stack(results, axis=2)
         scores[label] = np.mean(results, axis=2)
-        ci[label] = 5 * np.std(results, axis = 2)/np.sqrt(len(results))
+        ci[label] = 1.95 * np.std(results, axis = 2)/np.sqrt(results.shape[2])
         
-        indices = range(0,len(scores[label][:, 0]),1)
+        indices = range(0,len(scores[label][:, 0]),2)
         plt.plot(scores[label][indices, 0], scores[label][indices,column], label=label, color=colors[i])
         plt.fill_between(scores[label][indices, 0], (scores[label][indices,column]-ci[label][indices,column]), (scores[label][indices,column]+ci[label][indices,column]), color=colors[i], alpha=.1)
         plt.xlabel(x_label)

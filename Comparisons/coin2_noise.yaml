@@ -15,12 +15,6 @@ results_dirs :
       - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_1'
       - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_2'
       - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_3'
-  Decentralized with true reward: 
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_1'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_2'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_3'
-  Centralized: 
-      - 'saved_models/coin_2/coin_gather_2_CentralizedController_DQNAgent_done_1'
 plt_title: "Two Agents with Locally Ineffective Levers"
 x_label: "Training step"
 y_label: "Average returns of all agents"

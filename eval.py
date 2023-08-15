@@ -30,11 +30,11 @@ def evaluate_env(controller: BaseController, config: Config, episodes: int) -> D
             actions = controller.get_action(obs, True)
             for name in agents_names:
                 act_count[name][actions[name]] += 1
-            obs, rewards, terminations, truncations, infos = config.step(env.step(config.preprocess_action(actions)))
+            obs, rewards, terminations, infos = env.step(config.preprocess_action(actions))
             for name in agents_names:
                 episode_rewards[name].append(rewards[name])
             for i, name in enumerate(agents_names):
-                finished[i] = terminations[name] or truncations[name]
+                finished[i] = terminations[name]
             done = np.all(finished)
             if config.render_last_episode and episode == episodes-1:
                 env.render()
@@ -53,10 +53,11 @@ def evaluate_env(controller: BaseController, config: Config, episodes: int) -> D
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("config")
+    parser.add_argument("controller_config")
+    parser.add_argument("env_config")
     parser.add_argument("directory")
     args = parser.parse_args()
-    config = get_config(args.config)
+    config = get_config(args.controller_config, args.env_config)
     env = config.env(**config.env_args)
     env.reset()
     rng = np.random.default_rng()
