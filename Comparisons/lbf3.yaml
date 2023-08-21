@@ -7,6 +7,8 @@ results_dirs :
       - 'saved_models/lbf_3_DecentralizedController_DQNAgent_true_reward'
   SEAC:
       - 'saved_models/lbf_3_seac'
+  Proposed AC:
+      - 'saved_models/lbf_3_DecentralizedController_ACRewardAgent_0.0_0.5'
     
 plt_title: "Three Agents with three Food"
 x_label: "Training step"

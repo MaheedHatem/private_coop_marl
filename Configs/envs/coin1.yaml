@@ -10,4 +10,3 @@ env_args:
 total_steps: 3000000
 steps_per_epoch: 10000
 eval_episodes: 2
-render_last_episode: False

@@ -18,6 +18,7 @@ if __name__ == '__main__':
     config = get_config(args.controller_config, args.env_config)
     Path(config.save_dir).mkdir(parents=True, exist_ok=True)
     env = config.env(**config.env_args)
+    eval_env = config.env(**config.env_args)
     obs = env.reset()
     rng = np.random.default_rng()
     controller_init = get_controller(config.controller)
@@ -54,10 +55,11 @@ if __name__ == '__main__':
 
         if(global_step % config.steps_per_epoch == 0):
             print(f"Step {global_step}/{config.total_steps}")
-            print(evaluate_env(controller, config, config.eval_episodes))
+            print(evaluate_env(controller, config, config.eval_episodes, eval_env))
             controller.save_models(
                 config.save_dir, global_step//config.steps_per_epoch)
             print(
                 f"Elapsed time = {time.time() - start_time:.2f} seconds", flush=True)
             start_time = time.time()
     env.close()
+    eval_env.close()

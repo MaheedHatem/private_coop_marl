@@ -10,6 +10,7 @@ init_epsilon: 1
 final_epsilon: 0.1
 target_update: 1
 target_update_every: 500
+max_grad_norm: 0.5
 
 controller: 'CentralizedController'
 agent: 'DQNAgent'

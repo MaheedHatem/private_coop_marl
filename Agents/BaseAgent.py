@@ -16,6 +16,7 @@ class BaseAgent(nn.Module):
         self.act_dim = act_dim
         self.replay = ReplayBuffer(obs_dim, config.replay_size, config.trajectory_database,
             config.batch_size, config.gamma, rng)
+        self.max_grad_norm = config.max_grad_norm
         self.name = name
         self.config = config
         if config.reward_sharing:

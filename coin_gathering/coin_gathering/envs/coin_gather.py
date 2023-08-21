@@ -26,7 +26,7 @@ LEVER_EFFECTS = DO_NOTHING + 1
 class CoinGatherEnv(gym.Env):
     def __init__(self, grid_width=7, grid_height=9, N=3, max_episode_steps=1000,
                  levers_prob_self=[[0.8, 0.2, 0, 0], [0.6, 0.3, 0.1, 0]],
-                 levers_prob_other=[[0.2, 0.7, 0.1, 0], [0.5, 0.4, 0.1, 0]], render_mode=None):
+                 levers_prob_other=[[0.2, 0.7, 0.1, 0], [0.5, 0.4, 0.1, 0]], render_mode=None, seed=None):
         self.grid_width = grid_width
         self.grid_height = grid_height
         self.N = N
@@ -50,7 +50,7 @@ class CoinGatherEnv(gym.Env):
         assert np.all(np.abs(np.sum(levers_prob_self, axis=1)-1)<1e-10), 'Lever self probabilities do not sum to one'
         assert np.all(np.abs(np.sum(levers_prob_other, axis=1)-1)<1e-10), 'Lever other probabilities do not sum to one'
 
-        self.rng = np.random.default_rng()
+        self.rng = np.random.default_rng(seed)
 
         self.reset()
 

@@ -14,6 +14,7 @@ class RewardPredictor(nn.Module):
         self.models = [get_model(np.product(obs_dim)+self.act_dim, config.reward_hidden_layers + [1], cnn=config.cnn, output_activation=nn.Tanh()).to(self.device) for _ in range(config.N_predictors)]
         #self.models = [get_model(np.product(obs_dim)+1, config.reward_hidden_layers + [1], cnn=config.cnn).to(self.device) for _ in range(config.N_predictors)]
         self.optimizer = torch.optim.Adam(chain(*[model.parameters() for model in self.models]), lr=config.reward_lr)
+        self.max_grad_norm = config.max_grad_norm
 
     def get_act_one_hot(self, act: torch.Tensor) -> torch.Tensor:
 
@@ -66,6 +67,8 @@ class RewardPredictor(nn.Module):
                 raise Exception("loss is nan")
 
         loss.backward()
+        for model in self.models:
+            nn.utils.clip_grad_norm_(model.parameters(), self.max_grad_norm)
         self.optimizer.step()
 
     def save(self, save_dir: str, name: str, step: int):

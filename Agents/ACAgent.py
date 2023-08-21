@@ -42,6 +42,7 @@ class ACAgent(BaseAgent):
             loss = self.val_coef * ((adv)**2)
             loss = loss.mean()
             loss.backward()
+            nn.utils.clip_grad_norm_(critic.parameters(), self.max_grad_norm)
             optimizer.step()
             advantages.append(adv.detach())
         return advantages
@@ -56,6 +57,7 @@ class ACAgent(BaseAgent):
             loss = -(adv*act_prob)
             loss = loss.mean() - self.entropy_coef * entropy
             loss.backward()
+            nn.utils.clip_grad_norm_(actor.parameters(), self.max_grad_norm)
             optimizer.step()
 
     def train(self, number_of_batches: int, step: int):

@@ -43,6 +43,7 @@ class DQNAgent(BaseAgent):
             loss = ((q_net(obs)[batch_idx, act]  - target_q)**2)
             loss = loss.mean()
             loss.backward()
+            nn.utils.clip_grad_norm_(q_net.parameters(), self.max_grad_norm)
             optimizer.step()
             with torch.no_grad():
                 for p, p_targ in zip(q_net.parameters(), target_net.parameters()):

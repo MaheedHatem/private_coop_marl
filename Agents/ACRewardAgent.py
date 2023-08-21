@@ -36,11 +36,17 @@ class ACRewardAgent(ACAgent):
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
             return self.critic(torch.unsqueeze(obs, 0)).detach().numpy().item(), self.other_critic(torch.unsqueeze(obs, 0)).detach().numpy().item()
 
+    def normalize(self, adv: torch.Tensor) -> torch.Tensor:
+        std = torch.std(adv)
+        if std == .0:
+            std = 1
+        return (adv - torch.mean(adv))/std
+
     def train(self, number_of_batches: int, step: int):
         batches = self.replay.get_data()
         adv = self.train_critic(self.critic, self.critic_optimizer, batches)
         other_adv = self.train_critic(self.other_critic, self.other_critic_optimizer, batches, True)
-        combined_adv = [self.reward_weighting * a + (1 - self.reward_weighting) * oa for a, oa in zip(adv, other_adv)]
+        combined_adv = [self.reward_weighting * self.normalize(a) + (1 - self.reward_weighting) * self.normalize(oa) for a, oa in zip(adv, other_adv)]
         self.train_actor(self.actor, self.actor_optimizer, batches, combined_adv)
         #self.train_actor(self.other_actor, self.other_actor_optimizer, batches, other_adv)
 

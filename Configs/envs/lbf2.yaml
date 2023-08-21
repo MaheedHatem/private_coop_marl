@@ -5,6 +5,5 @@ env_args:
   max_episode_steps: 25
 max_food: 2
 eval_episodes: 2
-render_last_episode: False
 total_steps: 10000000
 steps_per_epoch: 10000

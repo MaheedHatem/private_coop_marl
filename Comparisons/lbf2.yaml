@@ -9,6 +9,8 @@ results_dirs :
       - 'saved_models/lbf_2_DecentralizedController_DQNAgent_done'
   Centralized: 
       - 'saved_models/lbf_2_CentralizedController_DQNAgent_done'
+  Proposed AC: 
+      - 'saved_models/lbf_2_DecentralizedController_ACRewardAgent_0.0_0.5'
 plt_title: "Two Agents with Two Foods"
 x_label: "Training step"
 y_label: "Average returns of all agents"

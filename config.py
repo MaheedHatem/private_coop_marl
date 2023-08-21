@@ -29,9 +29,10 @@ class Config:
         self.use_full_obs = controller_data['use_full_obs']
         self.device = controller_data['device']
 
-        self.replay_size = controller_data['replay_size'] #100000 works for spread
+        self.replay_size = controller_data['replay_size']
         self.gamma = controller_data['gamma']
-        self.lr = controller_data['lr'] #worked with 0.0001 too i think
+        self.lr = controller_data['lr']
+        self.max_grad_norm = controller_data['max_grad_norm']
         self.train_every = controller_data['train_every']
         self.train_batches = controller_data['train_batches']
         self.update_after = controller_data['update_after']
@@ -88,10 +89,8 @@ class Config:
             self.get_act_space = lambda env, names: {name: env.action_space[name].n for name in names}
             self.get_obs_space = lambda env, names: {name: env.observation_space[name].shape for name in names}
             self.preprocess_action = lambda act: list(act.values())
-        self.rendered_env = self.env
         self.get_agents_names = lambda env: [i for i in range(self.N_agents)]
         self.eval_episodes = env_data['eval_episodes']
-        self.render_last_episode = env_data['render_last_episode']
 
         if self.reward_sharing:
             self.trajectory_database = controller_data['trajectory_database']
