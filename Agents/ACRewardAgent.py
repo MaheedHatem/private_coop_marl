@@ -13,34 +13,20 @@ class ACRewardAgent(ACAgent):
             config: Config, rng = None):
                 super().__init__(name, obs_dim, act_dim, config, rng)
                 self.other_critic = get_model(obs_dim, config.hidden_layers + [1], cnn=config.cnn).to(self.config.device)
-                self.other_critic_optimizer = torch.optim.Adam(self.other_critic.parameters(), self.config.lr)
-                self.other_actor = CategoricalModel(obs_dim, config.hidden_layers + [act_dim])
-                self.other_actor_optimizer = torch.optim.Adam(self.other_actor.parameters(), self.config.lr)
+                self.other_critic_optimizer = torch.optim.Adam(self.other_critic.parameters(), self.config.lr, eps=config.adam_eps)
                 self.predictor = RewardPredictor(obs_dim, act_dim, config)
                 self.reward_weighting = config.reward_weighting
 
     def get_action(self, obs: np.ndarray, determenistic=False) -> int:
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
-            dist = self.actor.get_distribution(torch.unsqueeze(obs, 0))
-            return dist.sample().detach().numpy().item()
-            if self.rng.random() < self.reward_weighting:
-                dist = self.actor.get_distribution(torch.unsqueeze(obs, 0))
-                return dist.sample().detach().numpy().item()
-            else:
-                dist = self.other_actor.get_distribution(torch.unsqueeze(obs, 0))
-                return dist.sample().detach().numpy().item()
+            dist = self.actor.get_distribution(obs)
+            return dist.sample().detach().numpy()
     
     def get_value(self, obs: np.ndarray) -> int:
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
-            return self.critic(torch.unsqueeze(obs, 0)).detach().numpy().item(), self.other_critic(torch.unsqueeze(obs, 0)).detach().numpy().item()
-
-    def normalize(self, adv: torch.Tensor) -> torch.Tensor:
-        std = torch.std(adv)
-        if std == .0:
-            std = 1
-        return (adv - torch.mean(adv))/std
+            return self.critic(obs).detach().numpy(), self.other_critic(obs).detach().numpy()
 
     def train(self, number_of_batches: int, step: int):
         batches = self.replay.get_data()
@@ -48,28 +34,25 @@ class ACRewardAgent(ACAgent):
         other_adv = self.train_critic(self.other_critic, self.other_critic_optimizer, batches, True)
         combined_adv = [self.reward_weighting * self.normalize(a) + (1 - self.reward_weighting) * self.normalize(oa) for a, oa in zip(adv, other_adv)]
         self.train_actor(self.actor, self.actor_optimizer, batches, combined_adv)
-        #self.train_actor(self.other_actor, self.other_actor_optimizer, batches, other_adv)
 
     def save(self, save_dir: str, name: str, step: int):
         torch.save(self.critic.state_dict(), f"{save_dir}/{name}_critic{step}.pth")
         torch.save(self.actor.state_dict(), f"{save_dir}/{name}_actor{step}.pth")
         torch.save(self.other_critic.state_dict(), f"{save_dir}/{name}_other_critic{step}.pth")
-        torch.save(self.other_actor.state_dict(), f"{save_dir}/{name}_other_actor{step}.pth")
         self.predictor.save(save_dir, name, step)
 
     def load(self, save_dir: str, name: str, step: int):
         self.critic.load_state_dict(torch.load(f"{save_dir}/{name}_critic{step}.pth"))
         self.actor.load_state_dict(torch.load(f"{save_dir}/{name}_actor{step}.pth"))
         self.other_critic.load_state_dict(torch.load(f"{save_dir}/{name}_other_critic{step}.pth"))
-        self.other_actor.load_state_dict(torch.load(f"{save_dir}/{name}_other_actor{step}.pth"))
         self.predictor.load(save_dir, name, step)
 
     def insert_experience(self, obs: np.ndarray, act: np.ndarray, 
-            next_obs: np.ndarray, reward: float, done: int, sample_id: int):
-        obs = torch.unsqueeze(torch.as_tensor(obs, dtype=torch.float32).to(self.config.device), 0)
-        act = torch.unsqueeze(torch.as_tensor(act, dtype=torch.float32).to(self.config.device), 0)
+            next_obs: np.ndarray, reward: float, done: int, truncated: bool, sample_id: int):
+        obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
+        act = torch.as_tensor(act, dtype=torch.float32).to(self.config.device)
         self.replay.insert_other_reward(self.predictor.get_reward(obs, act))
-        super().insert_experience(obs, act, next_obs, reward, done, sample_id)
+        super().insert_experience(obs, act, next_obs, reward, done, truncated, sample_id)
 
     def get_scores(self, trajectories: np.ndarray) -> np.ndarray:
         scores = super().get_scores(trajectories)

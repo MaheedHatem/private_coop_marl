@@ -13,3 +13,4 @@ results_dirs :
 plt_title: "Three Agents with three Food"
 x_label: "Training step"
 y_label: "Average returns of all agents"
+column: 1

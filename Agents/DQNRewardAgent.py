@@ -15,7 +15,7 @@ class DQNRewardAgent(DQNAgent):
                 self.predictor = RewardPredictor(obs_dim, act_dim, config)
                 self.other_q = get_model(obs_dim, config.hidden_layers + [act_dim], cnn=config.cnn).to(self.config.device)
                 self.other_target = deepcopy(self.other_q).to(self.config.device).to(self.config.device)
-                self.other_optimizer = torch.optim.Adam(self.other_q.parameters(), self.config.lr)
+                self.other_optimizer = torch.optim.Adam(self.other_q.parameters(), self.config.lr, eps=config.adam_eps)
                 self.reward_weighting = config.reward_weighting
 
     def get_q_predict(self, obs: torch.tensor) -> torch.tensor:
@@ -28,17 +28,17 @@ class DQNRewardAgent(DQNAgent):
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
             random_number = self.rng.random()
             if random_number > self.epsilon or determenistic:
-                q_val = nn.functional.normalize(self.q_network(torch.unsqueeze(obs, 0)), p=1, dim=1)
-                other_q_val = nn.functional.normalize(self.other_q(torch.unsqueeze(obs, 0)), p=1, dim=1)
-                #other_q_val = nn.functional.normalize(self.get_q_predict(torch.unsqueeze(obs, 0)), p=1, dim=1)
+                q_val = nn.functional.normalize(self.q_network(obs), p=1, dim=1)
+                other_q_val = nn.functional.normalize(self.other_q(obs), p=1, dim=1)
+                #other_q_val = nn.functional.normalize(self.get_q_predict(obs), p=1, dim=1)
                 act_scores = self.reward_weighting * q_val + (1-self.reward_weighting) * other_q_val
                 if self.rng.random() < self.reward_weighting:
-                    return torch.argmax(q_val).cpu().detach().numpy().item()
+                    return torch.argmax(q_val, axis=-1).cpu().detach().numpy()
                 else:
-                    return torch.argmax(other_q_val).cpu().detach().numpy().item()
-                return torch.argmax(act_scores).cpu().detach().numpy().item()
+                    return torch.argmax(other_q_val, axis=-1).cpu().detach().numpy()
+                return torch.argmax(act_scores, axis=-1).cpu().detach().numpy()
             else:
-                return self.rng.integers(self.act_dim)
+                return self.rng.integers(self.act_dim, size=(self.num_parallel, 1))
 
     def get_targets_predicted(self, target_net: nn.Module, obs: torch.Tensor , act: torch.Tensor, next_obs: torch.Tensor, 
         rewards: torch.Tensor, done: torch.Tensor):

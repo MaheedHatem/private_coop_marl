@@ -8,8 +8,9 @@ batch_size: 100
 value_coef: 0.5
 entropy_coef: 0.01
 max_grad_norm: 0.5
+adam_eps: 1.0e-4
 
-controller: 'DecentralizedController'
+controller: 'CentralizedController'
 agent: 'ACAgent'
 true_reward: False
 use_full_obs: False

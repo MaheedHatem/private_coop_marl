@@ -2,7 +2,7 @@ from .LinearModel import LinearModel
 from .CNNModel import CNNModel
 from .ReplayBuffer import ReplayBuffer
 from .CategoricalModel import CategoricalModel
-from .wrappers import TimeLimit
+from .wrappers import *
 import torch.nn as nn
 from typing import Tuple, List
 

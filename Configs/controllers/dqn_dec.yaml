@@ -11,6 +11,7 @@ final_epsilon: 0.1
 target_update: 1
 target_update_every: 500
 max_grad_norm: 0.5
+adam_eps: 1.0e-4
 
 controller: 'DecentralizedController'
 agent: 'DQNAgent'

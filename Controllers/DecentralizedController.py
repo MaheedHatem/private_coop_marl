@@ -28,7 +28,7 @@ class DecentralizedController(BaseController):
         self.update_predictor_steps = config.update_predictor_steps
 
     def insert_experience(self, obs: Dict[str, np.ndarray], act: Dict[str, np.ndarray], 
-        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :[str, np.ndarray], sample_id: int):
+        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :Dict[str, np.ndarray], truncated : bool, sample_id: int):
         if self.use_full_obs:
             combined_obs = np.concatenate([obs[name] for name in self.names])
             combined_next_obs = np.concatenate([next_obs[name] for name in self.names])
@@ -40,17 +40,18 @@ class DecentralizedController(BaseController):
             rews = {name: reward for name in self.names}
         for name in self.names:
             if self.use_full_obs:
-                self.agents[name].insert_experience(combined_obs, act[name], combined_next_obs, rews[name], done[name], sample_id)
+                self.agents[name].insert_experience(combined_obs, act[name], combined_next_obs, rews[name], done, truncated, sample_id)
             else:
-                self.agents[name].insert_experience(obs[name], act[name], next_obs[name], rews[name], done[name], sample_id)
+                self.agents[name].insert_experience(obs[name], act[name], next_obs[name], rews[name], done, truncated, sample_id)
 
     def get_action(self, obs: Dict[str, np.ndarray], deterministic: bool = False) -> Dict[str, np.ndarray]:
         if self.use_full_obs:            
             combined_obs = np.concatenate([obs[name] for name in self.names])
         if self.use_full_obs:
-            return {name: self.agents[name].get_action(combined_obs, deterministic) for name in self.names}
+            actions = np.column_stack([self.agents[name].get_action(combined_obs, deterministic) for name in self.names])
         else:
-            return {name: self.agents[name].get_action(obs[name], deterministic) for name in self.names}
+            actions = np.column_stack([self.agents[name].get_action(obs[name], deterministic) for name in self.names])
+        return actions
     
     def train(self, number_of_batches: int, step: int):
         if self.reward_sharing and step < self.update_predictor_steps:

@@ -11,7 +11,7 @@ class BaseController:
         self.reward_sharing = config.reward_sharing
 
     def insert_experience(self, obs: Dict[str, np.ndarray], act: Dict[str, np.ndarray], 
-        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :[str, np.ndarray], sample_id: int):
+        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :Dict[str, np.ndarray], truncated : bool, sample_id: int):
         raise NotImplementedError()
 
     def get_action(self, obs: Dict[str, np.ndarray], deterministic: bool = False) -> Dict[str, np.ndarray]:

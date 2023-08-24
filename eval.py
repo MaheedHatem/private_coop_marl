@@ -4,10 +4,14 @@ from Controllers import get_controller
 from Controllers import BaseController
 from typing import Dict, Callable
 import time
+import torch
+import random
 from matplotlib import pyplot as plt
+from logger import init_logging
 import gym
 import time
 import argparse
+import logging
 
 def evaluate_env(controller: BaseController, config: Config, episodes: int, env) -> Dict[str, np.ndarray]:
     agents_names = controller.names
@@ -23,10 +27,8 @@ def evaluate_env(controller: BaseController, config: Config, episodes: int, env)
         done = False
         episode_rewards = {name: [] for name in agents_names}
         while not done:
-            actions = controller.get_action(obs, True)
-            for name in agents_names:
-                act_count[name][actions[name]] += 1
-            obs, rewards, terminations, infos = env.step(config.preprocess_action(actions))
+            actions = controller.get_action((np.expand_dims(obs,1)), True)
+            obs, rewards, terminations, infos = env.step(np.squeeze(actions))
             for name in agents_names:
                 episode_rewards[name].append(rewards[name])
             for i, name in enumerate(agents_names):
@@ -38,17 +40,16 @@ def evaluate_env(controller: BaseController, config: Config, episodes: int, env)
             rews[name][episode] = agent_reward
         rews['min'][episode] = np.min(np.array([rews[name][episode] for name in agents_names]))
         rews['max'][episode] = np.max(np.array([rews[name][episode] for name in agents_names]))
-    #print(act_count)
     return {name: rews[name].mean() for name in rews.keys()}
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("controller_config")
-    parser.add_argument("env_config")
-    parser.add_argument("directory")
-    args = parser.parse_args()
-    config = get_config(args.controller_config, args.env_config)
-    env = config.env(**config.env_args)
+def evaluate_run(args):
+    if args.seed != None:
+        torch.manual_seed(args.seed)
+        random.seed(args.seed)
+    config = get_config(args.controller_config, args.env_config, 1, args.directory, args.seed)
+    init_logging(f"{config.save_dir}/eval.log")
+    logging.info(args)
+    env = config.eval_env(**config.env_args)
     env.reset()
     rng = np.random.default_rng()
     controller_init = get_controller(config.controller)
@@ -68,7 +69,7 @@ if __name__ == '__main__':
         scores[index,2] = res['max']
         for i, name in enumerate(agents_names):
             scores[index, i+3] = res[name]
-        print(index, res)
+        logging.info(f"{index}: {res}")
     env.close()
     steps = np.arange(total_steps) * config.steps_per_epoch
     plt.plot(np.arange(total_steps) * config.steps_per_epoch, scores)

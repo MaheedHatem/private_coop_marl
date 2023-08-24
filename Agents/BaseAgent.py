@@ -14,7 +14,8 @@ class BaseAgent(nn.Module):
         self.rng = rng
         self.obs_dim = obs_dim
         self.act_dim = act_dim
-        self.replay = ReplayBuffer(obs_dim, config.replay_size, config.trajectory_database,
+        self.num_parallel = config.num_parallel
+        self.replay = ReplayBuffer(obs_dim, config.num_parallel, config.replay_size, config.trajectory_database,
             config.batch_size, config.gamma, rng)
         self.max_grad_norm = config.max_grad_norm
         self.name = name
@@ -26,8 +27,8 @@ class BaseAgent(nn.Module):
         raise  NotImplementedError()
 
     def insert_experience(self, obs: np.ndarray, act: np.ndarray, 
-            next_obs: np.ndarray, reward: float, done: int, sample_id: int):
-        self.replay.insert(obs, act, next_obs, reward, done, sample_id)
+            next_obs: np.ndarray, reward: float, done: int, truncated: bool, sample_id: int):
+        self.replay.insert(obs, act, next_obs, reward, done, truncated, sample_id)
     
     def get_scores(self, trajectories: np.ndarray) -> np.ndarray:
         return self.replay.get_rewards(trajectories)

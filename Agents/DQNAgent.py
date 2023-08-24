@@ -12,7 +12,7 @@ class DQNAgent(BaseAgent):
                 super().__init__(name, obs_dim, act_dim, config, rng)
                 self.q_network = get_model(obs_dim, config.hidden_layers + [act_dim], cnn=config.cnn).to(self.config.device)
                 self.target_network = deepcopy(self.q_network).to(self.config.device).to(self.config.device)
-                self.optimizer = torch.optim.Adam(self.q_network.parameters(), self.config.lr)
+                self.optimizer = torch.optim.Adam(self.q_network.parameters(), self.config.lr, eps=config.adam_eps)
                 self.epsilon = config.init_epsilon
                 self.target_update_every = config.target_update_every
 
@@ -21,10 +21,10 @@ class DQNAgent(BaseAgent):
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
             random_number = self.rng.random()
             if random_number > self.epsilon or determenistic:
-                q_val = self.q_network(torch.unsqueeze(obs, 0))
-                return torch.argmax(q_val).cpu().detach().numpy().item()
+                q_val = self.q_network(obs, 0)
+                return torch.argmax(q_val, axis=-1).cpu().detach().numpy()
             else:
-                return self.rng.integers(self.act_dim)
+                return self.rng.integers(self.act_dim, size=(self.num_parallel, 1))
 
     def get_targets(self, target_net: nn.Module, obs: torch.Tensor, act: torch.Tensor, next_obs: torch.Tensor, rewards: torch.Tensor, done: torch.Tensor):
         with torch.no_grad():

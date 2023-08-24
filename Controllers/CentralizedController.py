@@ -19,35 +19,33 @@ class CentralizedController(BaseController):
         self.agents = agent_init(name, combined_obs_dim, combined_act_dim, config, rng)
 
     def insert_experience(self, obs: Dict[str, np.ndarray], act: Dict[str, np.ndarray], 
-        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :[str, np.ndarray], sample_id: int):
-        obs = np.concatenate([obs[name] for name in self.names])
-        next_obs = np.concatenate([next_obs[name] for name in self.names])
+        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :Dict[str, np.ndarray], truncated : bool, sample_id: int):
+        obs = np.concatenate([obs[name] for name in self.names], axis=-1)
+        next_obs = np.concatenate([next_obs[name] for name in self.names], axis=-1)
         act = self.centralized_action(act)
-        rews = np.sum(np.array([rews[name] for name in self.names]))
-        done = np.all(np.array([done[name] for name in self.names]))
-        self.agents.insert_experience(obs, act, next_obs, rews, done, sample_id)
+        rews = np.sum(np.array([rews[name] for name in self.names]), axis=0)
+        self.agents.insert_experience(obs, act, next_obs, rews, done, truncated, sample_id)
 
-    def decentralized_action(self, act: int) -> Dict[str, int]:
-        acts = np.zeros(self.n_agents)
-        index = 0
-        while(act):
-            acts[index] = act % self.act_dim[index]
-            act //= self.act_dim[index]
-            index += 1
-        action = {}
-        for i, name in enumerate(self.names):
-            action[name] = int(acts[i])
-        return action
+    def decentralized_action(self, act: np.ndarray) -> Dict[str, int]:
+        acts = np.zeros((len(act), self.n_agents), dtype=np.int64)
+        for i in range(len(act)):
+            a = act[i]
+            index = 0
+            while(a):
+                acts[i, index] = a % self.act_dim[index]
+                a //= self.act_dim[index]
+                index += 1
+        return acts
 
     def centralized_action(self, acts: Dict[str, int]):
-        act = 0
+        act = np.zeros(acts.shape[1], dtype=np.int64)
         for i,name in reversed(list(enumerate(self.names))):
             act *= self.act_dim[i]
             act += acts[name]
-        return int(act)
+        return act
 
     def get_action(self, obs: Dict[str, np.ndarray], deterministic: bool = False) -> Dict[str, np.ndarray]:
-        return self.decentralized_action(self.agents.get_action(np.concatenate([obs[name] for name in self.names]), deterministic))
+        return self.decentralized_action(self.agents.get_action(np.concatenate([obs[name] for name in self.names], axis = -1), deterministic))
     
     def train(self, number_of_batches: int, step: int):
         self.agents.train(number_of_batches, step)

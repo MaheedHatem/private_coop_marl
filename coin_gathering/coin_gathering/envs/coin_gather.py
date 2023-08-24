@@ -3,6 +3,7 @@ from gym import spaces
 from PIL import Image, ImageColor
 from matplotlib import pyplot as plt
 import numpy as np
+from gym.utils import seeding
 
 EMPTY = 0
 AGENT = 1
@@ -26,7 +27,7 @@ LEVER_EFFECTS = DO_NOTHING + 1
 class CoinGatherEnv(gym.Env):
     def __init__(self, grid_width=7, grid_height=9, N=3, max_episode_steps=1000,
                  levers_prob_self=[[0.8, 0.2, 0, 0], [0.6, 0.3, 0.1, 0]],
-                 levers_prob_other=[[0.2, 0.7, 0.1, 0], [0.5, 0.4, 0.1, 0]], render_mode=None, seed=None):
+                 levers_prob_other=[[0.2, 0.7, 0.1, 0], [0.5, 0.4, 0.1, 0]], render_mode=None):
         self.grid_width = grid_width
         self.grid_height = grid_height
         self.N = N
@@ -50,9 +51,15 @@ class CoinGatherEnv(gym.Env):
         assert np.all(np.abs(np.sum(levers_prob_self, axis=1)-1)<1e-10), 'Lever self probabilities do not sum to one'
         assert np.all(np.abs(np.sum(levers_prob_other, axis=1)-1)<1e-10), 'Lever other probabilities do not sum to one'
 
-        self.rng = np.random.default_rng(seed)
+        self.seed()
 
         self.reset()
+
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
 
     def reset(self):
         self.time_step = 0
@@ -72,6 +79,8 @@ class CoinGatherEnv(gym.Env):
         return self.get_obs()
 
     def step(self, actions):
+        actions = np.squeeze(actions)
+        assert len(actions) == len(self.agents)
         self.time_step += 1
         rewards = [0 for name in self.agents]
         terminations = [self.time_step == self.max_episode_steps for name in self.agents]
@@ -124,8 +133,8 @@ class CoinGatherEnv(gym.Env):
         for a in self.agents:
             pulled_lever_index = pulled_lever[a]
             if pulled_lever_index != None:
-                agents_act = self.rng.choice(LEVER_EFFECTS, p=self.levers_prob_self[pulled_lever_index])
-                others_act = self.rng.choice(LEVER_EFFECTS, p=self.levers_prob_other[pulled_lever_index])
+                agents_act = self.np_random.choice(LEVER_EFFECTS, p=self.levers_prob_self[pulled_lever_index])
+                others_act = self.np_random.choice(LEVER_EFFECTS, p=self.levers_prob_other[pulled_lever_index])
                 if agents_act == ADD_COIN:
                     self.add_coin([a])
                 elif agents_act == ADD_BOMB:
@@ -169,7 +178,7 @@ class CoinGatherEnv(gym.Env):
         plt.show()
 
     def get_obs(self):
-        return [np.concatenate([np.array([
+        return tuple([np.concatenate([np.array([
             self.agents_positions_x[a],
             self.agents_positions_y[a],
             self.coin_avail[a],
@@ -179,7 +188,7 @@ class CoinGatherEnv(gym.Env):
             self.star_pos_x[a] - self.agents_positions_x[a] if self.star_avail[a] else 0,
             self.star_pos_y[a] - self.agents_positions_y[a] if self.star_avail[a] else 0]),
             self.bombs[a]]
-            ) for a in range(self.N)]
+            ) for a in range(self.N)])
 
     def add_coin(self, agents):
         for a in agents:
@@ -200,7 +209,7 @@ class CoinGatherEnv(gym.Env):
             valid_yindices = grid[0][mask]
             if(len(valid_xindices) == 0):
                 return
-            chosen_cell = self.rng.choice(len(valid_xindices))
+            chosen_cell = self.np_random.choice(len(valid_xindices))
             coinx = valid_xindices[chosen_cell]
             coiny = valid_yindices[chosen_cell]
             assert(self.rooms[a, coiny, coinx] == EMPTY)
@@ -225,7 +234,7 @@ class CoinGatherEnv(gym.Env):
             valid_yindices = grid[0][mask]
             if(len(valid_xindices) == 0):
                 return
-            chosen_cell = self.rng.choice(len(valid_xindices))
+            chosen_cell = self.np_random.choice(len(valid_xindices))
             starx = valid_xindices[chosen_cell]
             stary = valid_yindices[chosen_cell]
             assert(self.rooms[a, stary, starx] == EMPTY)
@@ -243,7 +252,7 @@ class CoinGatherEnv(gym.Env):
             valid_yindices = grid[0][mask]
             if(len(valid_xindices) == 0):
                 return
-            chosen_cell = self.rng.choice(len(valid_xindices))
+            chosen_cell = self.np_random.choice(len(valid_xindices))
             bombx = valid_xindices[chosen_cell]
             bomby = valid_yindices[chosen_cell]
             assert(self.rooms[a, bomby, bombx] == EMPTY)

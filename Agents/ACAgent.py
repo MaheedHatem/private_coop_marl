@@ -11,29 +11,44 @@ class ACAgent(BaseAgent):
             config: Config, rng = None):
                 super().__init__(name, obs_dim, act_dim, config, rng)
                 self.critic = get_model(obs_dim, config.hidden_layers + [1], cnn=config.cnn).to(self.config.device)
-                self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), self.config.lr)
+                self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), self.config.lr, eps=config.adam_eps)
                 self.actor = CategoricalModel(obs_dim, config.hidden_layers + [act_dim])
-                self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), self.config.lr)
+                self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), self.config.lr, eps=config.adam_eps)
                 self.val_coef = config.value_coef
                 self.entropy_coef = config.entropy_coef
 
     def get_action(self, obs: np.ndarray, determenistic=False) -> int:
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
-            dist = self.actor.get_distribution(torch.unsqueeze(obs, 0))
-            return dist.sample().detach().numpy().item()
+            dist = self.actor.get_distribution(obs)
+            return dist.sample().detach().numpy()
     
     def get_value(self, obs: np.ndarray) -> int:
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
-            return self.critic(torch.unsqueeze(obs, 0)).detach().numpy().item()
+            return self.critic(obs).detach().numpy()
 
+    def insert_experience(self, obs: np.ndarray, act: np.ndarray, 
+            next_obs: np.ndarray, reward: float, done: int, truncated: bool, sample_id: int):
+        val = self.get_value(next_obs)
+        if isinstance(val, tuple):
+            other_val = val[1]
+            self.replay.insert_other_val(other_val)
+            val = val[0]
+        self.replay.insert_val(val)
+        super().insert_experience(obs, act, next_obs, reward, done, truncated, sample_id)
+
+    def normalize(self, adv: torch.Tensor) -> torch.Tensor:
+        std = torch.std(adv)
+        if std == .0:
+            std = 1
+        return (adv - torch.mean(adv))/std
 
     def train_critic(self, critic: nn.Module, optimizer: torch.optim.Adam, batches: List[Tuple[np.ndarray]], use_other_ret: bool = False):
         advantages = []
         for batch in batches:
             batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
-            obs, act, rewards, done, ret, other_ret = batch
+            obs, act, rewards, ret, other_ret = batch
             batch_idx = torch.arange(len(act)).long()
             optimizer.zero_grad()
             if use_other_ret:
@@ -50,7 +65,7 @@ class ACAgent(BaseAgent):
     def train_actor(self, actor: nn.Module, optimizer: torch.optim.Adam, batches: List[Tuple[np.ndarray]], advantages: List[torch.Tensor]):
         for batch, adv in zip(batches, advantages):
             batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
-            obs, act, rewards, done, ret, _ = batch
+            obs, act, rewards, ret, _ = batch
             batch_idx = torch.arange(len(act)).long()
             optimizer.zero_grad()
             act_prob , entropy = actor.get_act_prob(obs, act)
@@ -63,6 +78,7 @@ class ACAgent(BaseAgent):
     def train(self, number_of_batches: int, step: int):
         batches = self.replay.get_data()
         adv = self.train_critic(self.critic, self.critic_optimizer, batches)
+        adv = [self.normalize(a) for a in adv]
         self.train_actor(self.actor, self.actor_optimizer, batches, adv)
 
     def save(self, save_dir: str, name: str, step: int):

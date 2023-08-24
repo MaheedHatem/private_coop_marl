@@ -13,7 +13,7 @@ class RewardPredictor(nn.Module):
         self.act_dim = act_dim
         self.models = [get_model(np.product(obs_dim)+self.act_dim, config.reward_hidden_layers + [1], cnn=config.cnn, output_activation=nn.Tanh()).to(self.device) for _ in range(config.N_predictors)]
         #self.models = [get_model(np.product(obs_dim)+1, config.reward_hidden_layers + [1], cnn=config.cnn).to(self.device) for _ in range(config.N_predictors)]
-        self.optimizer = torch.optim.Adam(chain(*[model.parameters() for model in self.models]), lr=config.reward_lr)
+        self.optimizer = torch.optim.Adam(chain(*[model.parameters() for model in self.models]), lr=config.reward_lr, eps=config.adam_eps)
         self.max_grad_norm = config.max_grad_norm
 
     def get_act_one_hot(self, act: torch.Tensor) -> torch.Tensor:
