@@ -3,11 +3,8 @@ from math import factorial
 from matplotlib import pyplot as plt
 import argparse
 import yaml
- 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("comparison_list")
-    args = parser.parse_args()
+
+def compare_results(args):
     with open(f"Comparisons/{args.comparison_list}.yaml", "r") as f:
         data = yaml.safe_load(f)
     results_dirs = data['results_dirs']

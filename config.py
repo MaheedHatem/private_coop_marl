@@ -40,7 +40,7 @@ class Config:
         self.batch_size = controller_data['batch_size'] // num_parallel
         self.total_steps = env_data['total_steps']
         self.steps_per_epoch = env_data['steps_per_epoch']
-        self.update_predictor_steps = controller_data.get('update_predictor_steps', self.total_steps)
+        self.update_predictor_steps = int(controller_data.get('update_predictor_fraction', 1) * self.total_steps)
         self.adam_eps = controller_data['adam_eps']
         if self.agent == 'ACAgent' or self.agent == 'ACRewardAgent':
             self.value_coef = controller_data['value_coef']

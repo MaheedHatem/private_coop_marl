@@ -3,6 +3,7 @@ from config import Config
 from typing import Tuple, Callable, List
 from misc import get_model, CategoricalModel
 from copy import deepcopy
+from itertools import chain
 import torch
 import torch.nn as nn
 
@@ -11,9 +12,8 @@ class ACAgent(BaseAgent):
             config: Config, rng = None):
                 super().__init__(name, obs_dim, act_dim, config, rng)
                 self.critic = get_model(obs_dim, config.hidden_layers + [1], cnn=config.cnn).to(self.config.device)
-                self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), self.config.lr, eps=config.adam_eps)
                 self.actor = CategoricalModel(obs_dim, config.hidden_layers + [act_dim])
-                self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), self.config.lr, eps=config.adam_eps)
+                self.optimizer = torch.optim.Adam(chain(self.critic.parameters(), self.actor.parameters()), self.config.lr, eps=config.adam_eps)
                 self.val_coef = config.value_coef
                 self.entropy_coef = config.entropy_coef
 
@@ -44,42 +44,41 @@ class ACAgent(BaseAgent):
             std = 1
         return (adv - torch.mean(adv))/std
 
-    def train_critic(self, critic: nn.Module, optimizer: torch.optim.Adam, batches: List[Tuple[np.ndarray]], use_other_ret: bool = False):
+    def critic_loss(self, critic: nn.Module, batches: List[Tuple[np.ndarray]], use_other_ret: bool = False):
         advantages = []
+        loss = 0
         for batch in batches:
             batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
             obs, act, rewards, ret, other_ret = batch
             batch_idx = torch.arange(len(act)).long()
-            optimizer.zero_grad()
             if use_other_ret:
                 ret = other_ret
             adv = ret - critic(obs)
-            loss = self.val_coef * ((adv)**2)
-            loss = loss.mean()
-            loss.backward()
-            nn.utils.clip_grad_norm_(critic.parameters(), self.max_grad_norm)
-            optimizer.step()
+            loss += ((adv)**2).mean()
             advantages.append(adv.detach())
-        return advantages
+        return loss, advantages
 
-    def train_actor(self, actor: nn.Module, optimizer: torch.optim.Adam, batches: List[Tuple[np.ndarray]], advantages: List[torch.Tensor]):
+    def actor_loss(self, actor: nn.Module, batches: List[Tuple[np.ndarray]], advantages: List[torch.Tensor]):
+        loss = 0
         for batch, adv in zip(batches, advantages):
             batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
             obs, act, rewards, ret, _ = batch
             batch_idx = torch.arange(len(act)).long()
-            optimizer.zero_grad()
-            act_prob , entropy = actor.get_act_prob(obs, act)
-            loss = -(adv*act_prob)
-            loss = loss.mean() - self.entropy_coef * entropy
-            loss.backward()
-            nn.utils.clip_grad_norm_(actor.parameters(), self.max_grad_norm)
-            optimizer.step()
+            act_prob, entropy = actor.get_act_prob(obs, act)
+            loss += -(adv*act_prob).mean() - self.entropy_coef * entropy
+        return loss
 
     def train(self, number_of_batches: int, step: int):
         batches = self.replay.get_data()
-        adv = self.train_critic(self.critic, self.critic_optimizer, batches)
+        self.optimizer.zero_grad()
+        critic_loss, adv = self.train_critic(self.critic, batches)
         adv = [self.normalize(a) for a in adv]
-        self.train_actor(self.actor, self.actor_optimizer, batches, adv)
+        actor_loss = self.train_actor(self.actor, batches, adv)
+        loss = self.val_coef * critic_loss + actor_loss
+        loss.backward()
+        nn.utils.clip_grad_norm_(self.critic.parameters(), self.max_grad_norm)
+        nn.utils.clip_grad_norm_(self.actor.parameters(), self.max_grad_norm)
+        self.optimizer.step()
 
     def save(self, save_dir: str, name: str, step: int):
         torch.save(self.critic.state_dict(), f"{save_dir}/{name}_critic{step}.pth")
@@ -88,9 +87,3 @@ class ACAgent(BaseAgent):
     def load(self, save_dir: str, name: str, step: int):
         self.critic.load_state_dict(torch.load(f"{save_dir}/{name}_critic{step}.pth"))
         self.actor.load_state_dict(torch.load(f"{save_dir}/{name}_actor{step}.pth"))
-
-    def finish_path(self, obs: np.ndarray, truncated: bool):
-        last_value = 0.0
-        if(truncated):
-            last_value = self.get_value(obs)
-        self.replay.finish_path(last_value)

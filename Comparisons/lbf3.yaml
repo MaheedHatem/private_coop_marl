@@ -1,14 +1,12 @@
 results_dirs :
-  Proposed Method:
-      - 'saved_models/lbf_3_DecentralizedController_DQNRewardAgent_0.0_0.5'
-  Decentralized: 
-      - 'saved_models/lbf_3_DecentralizedController_DQNAgent'
-  Decentralized True Reward: 
-      - 'saved_models/lbf_3_DecentralizedController_DQNAgent_true_reward'
   SEAC:
       - 'saved_models/lbf_3_seac'
-  Proposed AC:
-      - 'saved_models/lbf_3_DecentralizedController_ACRewardAgent_0.0_0.5'
+  Proposed Method:
+      - 'saved_models/lbf3_ac_reward_0.0_1'
+  Proposed 2nd Run:
+      - 'saved_models/lbf3_ac_reward_0.0_2'
+  Proposed 3rd Run:
+      - 'saved_models/lbf3_ac_reward_0.0_3'
     
 plt_title: "Three Agents with three Food"
 x_label: "Training step"

@@ -6,5 +6,5 @@ max_food: 2
 coop: "-coop"
 grid_size: 8
 eval_episodes: 2
-total_steps: 10000000
-steps_per_epoch: 10000
+total_steps: 100000000
+steps_per_epoch: 50000

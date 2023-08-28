@@ -24,8 +24,6 @@ reward_lr: *lr_val
 
 trajectory_length: 10
 pairs_count: 32
-similarity: 0.25
+similarity: 1
 trajectory_database: 10000
 reward_weighting: 0.5
-
-#update_predictor_fraction: 0.2

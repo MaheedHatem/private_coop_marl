@@ -3,6 +3,7 @@ from config import Config
 from typing import Tuple, Callable, List
 from misc import get_model, CategoricalModel
 from copy import deepcopy
+from itertools import chain
 import torch
 import torch.nn as nn
 from .ACAgent import ACAgent
@@ -13,7 +14,7 @@ class ACRewardAgent(ACAgent):
             config: Config, rng = None):
                 super().__init__(name, obs_dim, act_dim, config, rng)
                 self.other_critic = get_model(obs_dim, config.hidden_layers + [1], cnn=config.cnn).to(self.config.device)
-                self.other_critic_optimizer = torch.optim.Adam(self.other_critic.parameters(), self.config.lr, eps=config.adam_eps)
+                self.optimizer = torch.optim.Adam(chain(self.critic.parameters(), self.actor.parameters(), self.other_critic.parameters()), self.config.lr, eps=config.adam_eps)
                 self.predictor = RewardPredictor(obs_dim, act_dim, config)
                 self.reward_weighting = config.reward_weighting
 
@@ -30,10 +31,19 @@ class ACRewardAgent(ACAgent):
 
     def train(self, number_of_batches: int, step: int):
         batches = self.replay.get_data()
-        adv = self.train_critic(self.critic, self.critic_optimizer, batches)
-        other_adv = self.train_critic(self.other_critic, self.other_critic_optimizer, batches, True)
-        combined_adv = [self.reward_weighting * self.normalize(a) + (1 - self.reward_weighting) * self.normalize(oa) for a, oa in zip(adv, other_adv)]
-        self.train_actor(self.actor, self.actor_optimizer, batches, combined_adv)
+        self.optimizer.zero_grad()
+        critic_loss, adv = self.critic_loss(self.critic, batches)
+        other_critic_loss, other_adv = self.critic_loss(self.other_critic, batches, use_other_ret=True)
+        adv = [self.normalize(a) for a in adv]
+        other_adv = [self.normalize(a) for a in other_adv]
+        combined_adv = [self.reward_weighting * a + (1-self.reward_weighting) * oa for a, oa in zip(adv, other_adv)]
+        actor_loss = self.actor_loss(self.actor, batches, combined_adv)
+        loss = self.val_coef * critic_loss + actor_loss + self.val_coef * other_critic_loss
+        loss.backward()
+        nn.utils.clip_grad_norm_(self.critic.parameters(), self.max_grad_norm)
+        nn.utils.clip_grad_norm_(self.other_critic.parameters(), self.max_grad_norm)
+        nn.utils.clip_grad_norm_(self.actor.parameters(), self.max_grad_norm)
+        self.optimizer.step()
 
     def save(self, save_dir: str, name: str, step: int):
         torch.save(self.critic.state_dict(), f"{save_dir}/{name}_critic{step}.pth")
@@ -65,9 +75,3 @@ class ACRewardAgent(ACAgent):
     def train_predictor(self, trajectory_a: np.ndarray, trajectory_b: np.ndarray, ratio: np.ndarray):
         self.predictor.train(self.replay.get_obs(trajectory_a), self.replay.get_obs(trajectory_b), 
             self.replay.get_act(trajectory_a), self.replay.get_act(trajectory_b), ratio)
-
-    def finish_path(self, obs: np.ndarray, truncated: bool):
-        last_value = (0.0, 0.0)
-        if(truncated):
-            last_value = self.get_value(obs)
-        self.replay.finish_path(last_value)

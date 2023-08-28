@@ -13,6 +13,7 @@ import random
 from logger import init_logging
 import logging
 import sys
+from compare import compare_results
 from eval import evaluate_env, evaluate_run
 
 def train(args):
@@ -54,14 +55,9 @@ def train(args):
         obs = next_obs
         sample_id = (sample_id + 1) % config.trajectory_database
 
-        if((global_step+1 % config.train_every == 0 and global_step > 0 )):
-            controller.finish_path(obs, ((global_step > config.update_after)
-                                          and (global_step % config.train_every) == 0)
-                                         or truncated)
-
         if(global_step % config.steps_per_epoch == 0):
             logging.info(f"Step {global_step}/{config.total_steps}")
-            logging.info(evaluate_env(controller, config, config.eval_episodes, eval_env))
+            #logging.info(evaluate_env(controller, config, config.eval_episodes, eval_env))
             controller.save_models(
                 config.save_dir, global_step//config.steps_per_epoch)
             logging.info(
@@ -85,8 +81,12 @@ if __name__ == '__main__':
     eval_parser.add_argument("env_config")
     eval_parser.add_argument("directory")
     eval_parser.add_argument('-s', "--seed", default=None, type=int)
+    compare_parser = subparsers.add_parser('compare')
+    compare_parser.add_argument("comparison_list")
     args = parser.parse_args()
     if(args.command == "train"):
         train(args)
     elif (args.command == "eval"):
         evaluate_run(args)
+    elif (args.command == "compare"):
+        compare_results(args)

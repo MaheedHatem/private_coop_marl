@@ -81,7 +81,3 @@ class DecentralizedController(BaseController):
     def load_models(self, save_dir: str, step: int):
         for name in self.names:
             self.agents[name].load(save_dir, name, step)
-
-    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
-        for name in self.names:
-            self.agents[name].finish_path(obs[name], truncated)

@@ -1,22 +1,10 @@
 results_dirs :
-#   Proposed Method:
-#       - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_1'
-#       - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_2'
-#       - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_3'
   Proposed Method:
-      - 'saved_models/CoinGathering_2_DecentralizedController_DQNRewardAgent_0.0_0.7'
-  Decentralized with true reward: 
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_1'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_2'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNAgent_true_reward_done_3'
+      - 'saved_models/coin2_ac_reward_0.0_1'
+      - 'saved_models/coin2_ac_reward_0.0_2'
+      - 'saved_models/coin2_ac_reward_0.0_3'
   SEAC:
       - 'saved_models/coin_2/coin_gather_2_seac'
-  Centralized: 
-      - 'saved_models/coin_2/coin_gather_2_CentralizedController_DQNAgent_done_1'
-  Proposed AC: 
-      - 'saved_models/CoinGathering_2_DecentralizedController_ACRewardAgent_0.0_0.5_1'
-  Proposed AC 2nd Run: 
-      - 'saved_models/CoinGathering_2_DecentralizedController_ACRewardAgent_0.0_0.5'
 plt_title: "Two Agents with Locally Ineffective Levers"
 x_label: "Training step"
 y_label: "Average returns of all agents"

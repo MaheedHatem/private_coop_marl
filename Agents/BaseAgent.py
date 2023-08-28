@@ -64,7 +64,4 @@ class BaseAgent(nn.Module):
 
     def load(self, save_dir: str, name: str, step: int):
         raise NotImplementedError()
-
-    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
-        pass
     

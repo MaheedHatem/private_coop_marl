@@ -58,6 +58,3 @@ class CentralizedController(BaseController):
 
     def load_models(self, save_dir: str, step: int):
         self.agents.load(save_dir, 'central', step)
-
-    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
-        self.agents.finish_path(obs, truncated)

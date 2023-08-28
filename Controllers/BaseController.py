@@ -28,6 +28,3 @@ class BaseController:
 
     def load_models(self, save_dir: str, step: int):
         raise NotImplementedError()
-
-    def finish_path(self, obs: Dict[str, np.ndarray], truncated: bool):
-        raise NotImplementedError()

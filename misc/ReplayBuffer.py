@@ -113,27 +113,6 @@ class ReplayBuffer():
     def get_act(self, trajectories: np.ndarray) -> np.ndarray:
         return self.remove_processes_dimension(self.act_traj[trajectories], 2)
 
-    def finish_path(self, last_val = 0):
-        both_rewards = False
-        if(isinstance(last_val, Iterable)):
-            assert len(last_val) == 2
-            other_val = last_val[1]
-            last_val = last_val[0]
-            both_rewards = True
-        path_end = self.cur
-        if self.cur == 0 and self.size == self.max_size:
-            path_end = self.max_size
-        path_slice = slice(self.path_start, path_end)
-        rews = np.append(self.rewards[path_slice], last_val)
-        if both_rewards:
-            other_rews = np.append(self.other_rewards[path_slice], other_val)
-            self.other_ret[path_slice] = discount_cumsum(other_rews, self.gamma)[:-1]
-        
-        
-        self.ret[path_slice] = discount_cumsum(rews, self.gamma)[:-1]
-        
-        self.path_start = self.cur
-
     def compute_returns(self):
 
         truncated = np.copy(self.truncated)
