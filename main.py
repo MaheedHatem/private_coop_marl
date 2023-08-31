@@ -1,7 +1,6 @@
 from config import *
 import numpy as np
 from Controllers import get_controller
-from typing import Dict, Callable
 import time
 from matplotlib import pyplot as plt
 import gym
@@ -57,7 +56,7 @@ def train(args):
 
         if(global_step % config.steps_per_epoch == 0):
             logging.info(f"Step {global_step}/{config.total_steps}")
-            #logging.info(evaluate_env(controller, config, config.eval_episodes, eval_env))
+            logging.info(evaluate_env(controller, config, config.eval_episodes, eval_env))
             controller.save_models(
                 config.save_dir, global_step//config.steps_per_epoch)
             logging.info(

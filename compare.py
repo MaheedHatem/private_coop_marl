@@ -22,7 +22,7 @@ def compare_results(args):
             results.append(np.loadtxt(f"{result_dir}/results.csv", delimiter=','))
         results = np.stack(results, axis=2)
         scores[label] = np.mean(results, axis=2)
-        ci[label] = 1.95 * np.std(results, axis = 2)/np.sqrt(results.shape[2])
+        ci[label] = 1.90 * np.std(results, axis = 2)/np.sqrt(results.shape[2])
         
         indices = range(0,len(scores[label][:, 0]),2)
         plt.plot(scores[label][indices, 0], scores[label][indices,column], label=label, color=colors[i])

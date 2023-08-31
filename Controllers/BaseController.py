@@ -1,30 +1,29 @@
-from typing import List, Dict, Tuple
 from config import Config
 import numpy as np
 
 class BaseController:
-    def __init__(self, n_agents: int, names: List[str], obs_dim: Dict[str, Tuple], act_dim: Dict[str, int],
-            config: Config, rng = None):
+    def __init__(self, n_agents, names, obs_dim, act_dim,
+            config, rng = None):
         self.n_agents = n_agents
         self.names = names
         self.use_full_obs = config.use_full_obs
         self.reward_sharing = config.reward_sharing
 
-    def insert_experience(self, obs: Dict[str, np.ndarray], act: Dict[str, np.ndarray], 
-        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :Dict[str, np.ndarray], truncated : bool, sample_id: int):
+    def insert_experience(self, obs, act, 
+        next_obs, rews, done, truncated, sample_id):
         raise NotImplementedError()
 
-    def get_action(self, obs: Dict[str, np.ndarray], deterministic: bool = False) -> Dict[str, np.ndarray]:
+    def get_action(self, obs, deterministic = False):
         raise NotImplementedError()
 
-    def train(self, number_of_batches: int, step: int):
+    def train(self, number_of_batches, step):
         raise NotImplementedError()
 
-    def update_epsilon(self, step: int):
+    def update_epsilon(self, step):
         raise NotImplementedError()
 
-    def save_models(self, save_dir: str, step: int):
+    def save_models(self, save_dir, step):
         raise NotImplementedError()
 
-    def load_models(self, save_dir: str, step: int):
+    def load_models(self, save_dir, step):
         raise NotImplementedError()

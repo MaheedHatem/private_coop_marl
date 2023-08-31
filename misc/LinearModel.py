@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from typing import Tuple, List
 import numpy as np
 
 def init(module, weight_init, bias_init, gain=1):
@@ -9,7 +8,7 @@ def init(module, weight_init, bias_init, gain=1):
     return module
     
 class LinearModel(nn.Module):
-    def __init__(self, in_dim: Tuple, sizes: List, activation=nn.ReLU(), output_activation=nn.Identity()):
+    def __init__(self, in_dim, sizes, activation=nn.ReLU(), output_activation=nn.Identity()):
         super().__init__()
         init_ = lambda m: init(
             m, nn.init.orthogonal_, lambda x: nn.init.constant_(x, 0), np.sqrt(2)

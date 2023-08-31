@@ -1,4 +1,3 @@
-from typing import List, Dict, Tuple
 from config import Config
 from .BaseController import BaseController
 from .TrajectoryServer import TrajectoryServer
@@ -7,8 +6,8 @@ import numpy as np
 import operator
 
 class DecentralizedController(BaseController):
-    def __init__(self, n_agents: int, names: List[str], obs_dim: Dict[str, Tuple], act_dim: Dict[str, int],
-            config: Config, rng = None):
+    def __init__(self, n_agents, names, obs_dim, act_dim,
+            config, rng = None):
         super().__init__(n_agents, names, obs_dim, act_dim, config, rng)
         self.agents = {}
         agent_init = get_agent(config.agent)
@@ -27,8 +26,8 @@ class DecentralizedController(BaseController):
         self.true_reward = config.true_reward
         self.update_predictor_steps = config.update_predictor_steps
 
-    def insert_experience(self, obs: Dict[str, np.ndarray], act: Dict[str, np.ndarray], 
-        next_obs: Dict[str, np.ndarray], rews: Dict[str, np.ndarray], done :Dict[str, np.ndarray], truncated : bool, sample_id: int):
+    def insert_experience(self, obs, act, 
+        next_obs, rews, done, truncated , sample_id):
         if self.use_full_obs:
             combined_obs = np.concatenate([obs[name] for name in self.names])
             combined_next_obs = np.concatenate([next_obs[name] for name in self.names])
@@ -44,7 +43,7 @@ class DecentralizedController(BaseController):
             else:
                 self.agents[name].insert_experience(obs[name], act[name], next_obs[name], rews[name], done, truncated, sample_id)
 
-    def get_action(self, obs: Dict[str, np.ndarray], deterministic: bool = False) -> Dict[str, np.ndarray]:
+    def get_action(self, obs, deterministic= False):
         if self.use_full_obs:            
             combined_obs = np.concatenate([obs[name] for name in self.names])
         if self.use_full_obs:
@@ -53,7 +52,7 @@ class DecentralizedController(BaseController):
             actions = np.column_stack([self.agents[name].get_action(obs[name], deterministic) for name in self.names])
         return actions
     
-    def train(self, number_of_batches: int, step: int):
+    def train(self, number_of_batches, step):
         if self.reward_sharing and step < self.update_predictor_steps:
             for batch in range(number_of_batches):
                 trajectories_a, trajectories_b, votes = self.trajectory_server.get_votes()
@@ -70,14 +69,14 @@ class DecentralizedController(BaseController):
         for agent in self.agents.values():
             agent.train(number_of_batches, step)
 
-    def update_epsilon(self, step: int):
+    def update_epsilon(self, step):
        for agent in self.agents.values():
            agent.update_epsilon(step)
 
-    def save_models(self, save_dir: str, step: int):
+    def save_models(self, save_dir, step):
         for name in self.names:
             self.agents[name].save(save_dir, name, step)
 
-    def load_models(self, save_dir: str, step: int):
+    def load_models(self, save_dir, step):
         for name in self.names:
             self.agents[name].load(save_dir, name, step)

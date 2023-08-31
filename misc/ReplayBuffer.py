@@ -1,31 +1,11 @@
 
 import numpy as np
-from typing import Tuple
 import scipy
 from collections.abc import Iterable
 
-def discount_cumsum(x, discount):
-    """
-    magic from rllab for computing discounted cumulative sums of vectors.
-
-    input: 
-        vector x, 
-        [x0, 
-         x1, 
-         x2]
-
-    output:
-        [x0 + discount * x1 + discount^2 * x2,  
-         x1 + discount * x2,
-         x2]
-    """
-    return scipy.signal.lfilter([1], [1, float(-discount)], x[::-1], axis=0)[::-1]
-
-
-
 class ReplayBuffer():
-    def __init__(self, obs_dim: Tuple[int], num_parallel: int, 
-                 max_size: int, trajectory_buffer_size: int, batch_size: int, gamma: float, rng=None):
+    def __init__(self, obs_dim, num_parallel, 
+                 max_size, trajectory_buffer_size, batch_size, gamma, rng=None):
         self.max_size = max_size
         self.max_trajectory_buffer_size = trajectory_buffer_size
         self.rng = rng
@@ -64,8 +44,8 @@ class ReplayBuffer():
     def insert_other_val(self, other_val):
         self.other_val[self.cur] = np.squeeze(other_val)
 
-    def insert(self, obs: np.ndarray, act: np.ndarray,
-               next_obs: np.ndarray, reward: float, done: int, truncated: bool, sample_id: int):
+    def insert(self, obs, act,
+               next_obs, reward, done, truncated, sample_id):
         self.obs[self.cur] = obs
         self.act[self.cur] = act
         self.obs_traj[self.cur_traj] = obs
@@ -81,14 +61,14 @@ class ReplayBuffer():
         self.cur_traj = (self.cur_traj + 1) % self.max_trajectory_buffer_size
         self.size = min(self.size + 1, self.max_size)
 
-    def get_batch(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def get_batch(self):
         assert self.size >= self.batch_size
         index = self.rng.choice(self.size, self.batch_size, replace=False)
         batch = self.obs[index], self.act[index], self.next_obs[index], self.rewards[index], self.done[index]
         batch = tuple([self.remove_processes_dimension(dat, 1) for dat in batch])
         return batch
 
-    def get_data(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def get_data(self):
         assert self.size == self.max_size and self.cur == 0
         self.size = 0
         self.cur = 0
@@ -104,13 +84,13 @@ class ReplayBuffer():
             batches.append(batch)
         return batches
 
-    def get_rewards(self, trajectories: np.ndarray) -> np.ndarray:
+    def get_rewards(self, trajectories):
         return self.remove_processes_dimension(self.rewards_traj[trajectories].sum(axis = 1), 1)
 
-    def get_obs(self, trajectories: np.ndarray) -> np.ndarray:
+    def get_obs(self, trajectories):
         return self.remove_processes_dimension(self.obs_traj[trajectories], 2)
 
-    def get_act(self, trajectories: np.ndarray) -> np.ndarray:
+    def get_act(self, trajectories):
         return self.remove_processes_dimension(self.act_traj[trajectories], 2)
 
     def compute_returns(self):
@@ -128,7 +108,7 @@ class ReplayBuffer():
             self.other_ret[i] = next_other_val
 
 
-    def remove_processes_dimension(self, arr: np.ndarray, axis):
+    def remove_processes_dimension(self, arr, axis):
         assert arr.shape[axis] == self.num_parallel
         arr = np.moveaxis(arr, axis, 0)
         arr = arr.reshape(arr.shape[0]*arr.shape[1],*arr.shape[2:])

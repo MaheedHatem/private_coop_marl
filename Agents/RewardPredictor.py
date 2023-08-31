@@ -7,7 +7,7 @@ import numpy as np
 import torch.nn as nn
 
 class RewardPredictor(nn.Module):
-    def __init__(self, obs_dim: int, act_dim: int, config: Config):
+    def __init__(self, obs_dim, act_dim, config):
         super().__init__()
         self.device = config.device
         self.act_dim = act_dim
@@ -16,14 +16,14 @@ class RewardPredictor(nn.Module):
         self.optimizer = torch.optim.Adam(chain(*[model.parameters() for model in self.models]), lr=config.reward_lr, eps=config.adam_eps)
         self.max_grad_norm = config.max_grad_norm
 
-    def get_act_one_hot(self, act: torch.Tensor) -> torch.Tensor:
+    def get_act_one_hot(self, act):
 
         act_one_hot = torch.zeros((*act.shape, self.act_dim)).scatter_(-1, act.long().unsqueeze(-1), 1).to(self.device)
 
         return act_one_hot
         #return torch.unsqueeze(act, -1)
     
-    def get_reward(self, obs: torch.Tensor, act: torch.Tensor) -> torch.Tensor:
+    def get_reward(self, obs, act):
         with torch.no_grad():
             rewards = 0
             act = self.get_act_one_hot(act)
@@ -33,8 +33,8 @@ class RewardPredictor(nn.Module):
             rewards /= len(self.models)
         return rewards
 
-    def train(self, trajectory_a: np.ndarray, trajectory_b: np.ndarray, 
-            act_a: np.ndarray, act_b: np.ndarray, ratio: np.ndarray): 
+    def train(self, trajectory_a, trajectory_b, 
+            act_a, act_b, ratio): 
         #trajectory dim = Number trajectories X obs per trajectories X obs dim
         #ratio is 1 if a is preferred
         act_a = torch.as_tensor(act_a, dtype = torch.float32).to(self.device)
@@ -71,10 +71,10 @@ class RewardPredictor(nn.Module):
             nn.utils.clip_grad_norm_(model.parameters(), self.max_grad_norm)
         self.optimizer.step()
 
-    def save(self, save_dir: str, name: str, step: int):
+    def save(self, save_dir, name, step):
         for i in range(len(self.models)):
             torch.save(self.models[i].state_dict(), f"{save_dir}/{name}_pred_{i}_{step}.pth")
 
-    def load(self, save_dir: str, name: str, step: int):
+    def load(self, save_dir, name, step):
         for i in range(len(self.models)):
             self.models[i].load_state_dict(torch.load(f"{save_dir}/{name}_pred_{i}_{step}.pth"))

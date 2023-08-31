@@ -1,14 +1,13 @@
 from .BaseAgent import *
 from config import Config
-from typing import Tuple, Callable
 from misc import get_model
 from copy import deepcopy
 import torch
 import torch.nn as nn
 
 class DQNAgent(BaseAgent):
-    def __init__(self, name: str, obs_dim: Tuple, act_dim: int,
-            config: Config, rng = None):
+    def __init__(self, name, obs_dim, act_dim,
+            config, rng = None):
                 super().__init__(name, obs_dim, act_dim, config, rng)
                 self.q_network = get_model(obs_dim, config.hidden_layers + [act_dim], cnn=config.cnn).to(self.config.device)
                 self.target_network = deepcopy(self.q_network).to(self.config.device).to(self.config.device)
@@ -16,7 +15,7 @@ class DQNAgent(BaseAgent):
                 self.epsilon = config.init_epsilon
                 self.target_update_every = config.target_update_every
 
-    def get_action(self, obs: np.ndarray, determenistic=False) -> int:
+    def get_action(self, obs, determenistic=False):
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
             random_number = self.rng.random()
@@ -26,13 +25,13 @@ class DQNAgent(BaseAgent):
             else:
                 return self.rng.integers(self.act_dim, size=(self.num_parallel, 1))
 
-    def get_targets(self, target_net: nn.Module, obs: torch.Tensor, act: torch.Tensor, next_obs: torch.Tensor, rewards: torch.Tensor, done: torch.Tensor):
+    def get_targets(self, target_net, obs, act, next_obs, rewards, done):
         with torch.no_grad():
             return rewards + (1 - done) * self.config.gamma * target_net(next_obs).max(dim=-1).values
 
 
-    def train_q_network(self, number_of_batches: int, q_net: nn.Module, target_net: nn.Module,
-         get_targets: Callable, optimizer: torch.optim.Adam, update_target: bool = False):
+    def train_q_network(self, number_of_batches, q_net, target_net,
+         get_targets, optimizer, update_target= False):
         for b in range(number_of_batches):
             batch = self.replay.get_batch()
             batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
@@ -51,14 +50,14 @@ class DQNAgent(BaseAgent):
                         self.config.target_update * p.data)
 
     
-    def update_epsilon(self, step: int):
+    def update_epsilon(self, step):
         self.epsilon = max(self.config.final_epsilon, self.config.init_epsilon + step * (self.config.final_epsilon - self.config.init_epsilon)/self.config.random_steps)
 
-    def train(self, number_of_batches: int, step: int):
+    def train(self, number_of_batches, step):
         self.train_q_network(number_of_batches, self.q_network, self.target_network, self.get_targets, self.optimizer, step%self.target_update_every==0)
 
-    def save(self, save_dir: str, name: str, step: int):
+    def save(self, save_dir, name, step):
         torch.save(self.q_network.state_dict(), f"{save_dir}/{name}_q{step}.pth")
 
-    def load(self, save_dir: str, name: str, step: int):
+    def load(self, save_dir, name, step):
         self.q_network.load_state_dict(torch.load(f"{save_dir}/{name}_q{step}.pth"))

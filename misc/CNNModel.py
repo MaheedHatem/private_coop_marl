@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
-from typing import Tuple, List
 import numpy as np
 
 class CNNModel(nn.Module):
-    def __init__(self, in_dim: Tuple, filters: List, sizes: List, activation=nn.ReLU(), output_activation=nn.Identity()):
+    def __init__(self, in_dim, filters, sizes, activation=nn.ReLU(), output_activation=nn.Identity()):
         super().__init__()
         layers = []
         for j in range(len(filters)):

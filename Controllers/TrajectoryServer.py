@@ -1,12 +1,9 @@
 import numpy as np
-from typing import List
 from config import Config
-from typing import Tuple
 from Agents.BaseAgent import BaseAgent
-from typing import Dict
 
 class TrajectoryServer():
-    def __init__(self, config: Config, agents: Dict[str, BaseAgent], rng = None):
+    def __init__(self, config, agents, rng = None):
         if rng == None:
             rng = np.random.default_rng()
         self.rng = rng
@@ -19,7 +16,7 @@ class TrajectoryServer():
         self.curi = 0
         self.curj = 0
 
-    def insert_sample(self, sample_id: int):
+    def insert_sample(self, sample_id):
         self.trajectories[self.curi, self.curj] = sample_id
         self.curj += 1
         if self.curj == self.trajectory_length:
@@ -27,14 +24,14 @@ class TrajectoryServer():
             self.curi = (self.curi + 1) % self.max_size
             self.size = min(self.size + 1, self.max_size)
     
-    def create_trajectories_pairs(self) -> Tuple[np.ndarray, np.ndarray]:
+    def create_trajectories_pairs(self):
         # pairs = np.triu_indices(self.size, k = 1)
         # selected_pairs = self.rng.choice(len(pairs[0]), self.pairs_count, replace=False)
         # return self.trajectories[pairs[0][selected_pairs]], self.trajectories[pairs[1][selected_pairs]]
         indices = self.rng.permutation(self.size)
         return self.trajectories[indices[0:self.pairs_count]], self.trajectories[indices[self.pairs_count:self.pairs_count*2]]
 
-    def get_votes(self) -> np.ndarray:
+    def get_votes(self):
         trajectories_a, trajectories_b = self.create_trajectories_pairs()
         votes = {}
         for name, agent in self.agents.items():

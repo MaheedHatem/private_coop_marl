@@ -2,7 +2,6 @@ from config import *
 import numpy as np
 from Controllers import get_controller
 from Controllers import BaseController
-from typing import Dict, Callable
 import time
 import torch
 import random
@@ -13,7 +12,7 @@ import time
 import argparse
 import logging
 
-def evaluate_env(controller: BaseController, config: Config, episodes: int, env) -> Dict[str, np.ndarray]:
+def evaluate_env(controller, config, episodes, env):
     agents_names = controller.names
     finished = np.zeros(controller.n_agents)
     rews = {name: np.zeros(episodes) for name in agents_names}

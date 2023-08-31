@@ -1,13 +1,12 @@
 from misc.ReplayBuffer import ReplayBuffer
 from config import Config
-from typing import Tuple, Dict
 import numpy as np
 import torch
 import torch.nn as nn
 
 class BaseAgent(nn.Module):
-    def __init__(self, name: str, obs_dim: Tuple, act_dim: int,
-            config: Config, rng = None):
+    def __init__(self, name, obs_dim, act_dim,
+            config, rng = None):
         super().__init__()
         if rng == None:
             rng = np.random.default_rng()
@@ -23,18 +22,18 @@ class BaseAgent(nn.Module):
         if config.reward_sharing:
             self.perturb_prob = config.perturb_prob
 
-    def get_action(self, obs: np.ndarray, determenistic=False) -> int:
+    def get_action(self, obs, determenistic=False):
         raise  NotImplementedError()
 
-    def insert_experience(self, obs: np.ndarray, act: np.ndarray, 
-            next_obs: np.ndarray, reward: float, done: int, truncated: bool, sample_id: int):
+    def insert_experience(self, obs, act, 
+            next_obs, reward, done, truncated, sample_id):
         self.replay.insert(obs, act, next_obs, reward, done, truncated, sample_id)
     
-    def get_scores(self, trajectories: np.ndarray) -> np.ndarray:
+    def get_scores(self, trajectories):
         return self.replay.get_rewards(trajectories)
     
-    def compare_trajectories(self, trajectories_a: np.ndarray, 
-        trajectories_b: np.ndarray) -> np.ndarray:
+    def compare_trajectories(self, trajectories_a, 
+        trajectories_b):
         scores_a = self.get_scores(trajectories_a)
         scores_b = self.get_scores(trajectories_b)
         preference = np.zeros(len(scores_a))
@@ -53,15 +52,15 @@ class BaseAgent(nn.Module):
                 #preference[i] = self.rng.random()
         return preference
 
-    def train(self, number_of_batches: int, step: int):
+    def train(self, number_of_batches, step):
         raise NotImplementedError()
 
-    def update_epsilon(self, step: int):
+    def update_epsilon(self, step):
         pass
 
-    def save(self, save_dir: str, name: str, step: int):
+    def save(self, save_dir, name, step):
         raise NotImplementedError()
 
-    def load(self, save_dir: str, name: str, step: int):
+    def load(self, save_dir, name, step):
         raise NotImplementedError()
     
