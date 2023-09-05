@@ -63,9 +63,9 @@ class ACAgent(BaseAgent):
         data = self.replay.get_data()
         data = tuple(torch.as_tensor(d).to(self.config.device) for d in data)
         self.optimizer.zero_grad()
-        critic_loss, adv = self.train_critic(self.critic, data)
+        critic_loss, adv = self.critic_loss(self.critic, data)
         adv = self.normalize(adv)
-        actor_loss, entropy = self.train_actor(self.actor, data, adv)
+        actor_loss, entropy = self.actor_loss(self.actor, data, adv)
         loss = self.val_coef * critic_loss + actor_loss - self.entropy_coef * entropy
         loss.backward()
         nn.utils.clip_grad_norm_(self.critic.parameters(), self.max_grad_norm)
