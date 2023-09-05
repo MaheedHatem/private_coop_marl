@@ -72,5 +72,5 @@ def evaluate_run(args):
     env.close()
     steps = np.arange(total_steps) * config.steps_per_epoch
     plt.plot(np.arange(total_steps) * config.steps_per_epoch, scores)
-    plt.show()
+    #plt.show()
     np.savetxt(f"{model_dir}/results.csv", np.column_stack((steps, scores)), delimiter=',')

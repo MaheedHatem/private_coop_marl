@@ -18,7 +18,7 @@ class RewardPredictor(nn.Module):
 
     def get_act_one_hot(self, act):
 
-        act_one_hot = torch.zeros((*act.shape, self.act_dim)).scatter_(-1, act.long().unsqueeze(-1), 1).to(self.device)
+        act_one_hot = torch.zeros((*act.shape, self.act_dim)).to(self.device).scatter_(-1, act.long().unsqueeze(-1), 1)
 
         return act_one_hot
         #return torch.unsqueeze(act, -1)

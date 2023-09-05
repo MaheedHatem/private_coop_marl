@@ -1,16 +1,20 @@
 results_dirs :
   Proposed Method:
-      - 'saved_models/coin2_ac_reward_0.0_1'
-      - 'saved_models/coin2_ac_reward_0.0_2'
-      - 'saved_models/coin2_ac_reward_0.0_3'
-  Proposed Method Noisy 0.2:
-      - 'saved_models/coin2_ac_reward_0.2_1'
-      - 'saved_models/coin2_ac_reward_0.2_2'
-      - 'saved_models/coin2_ac_reward_0.2_3'
-  Proposed Method Noisy 0.4:
-      - 'saved_models/coin2_ac_reward_0.4_1'
-      - 'saved_models/coin2_ac_reward_0.4_2'
-      - 'saved_models/coin2_ac_reward_0.4_3'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.0_1'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.0_2'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.0_3'
+  Proposed Method Perturbation Probability 0.2:
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.2_1'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.2_2'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.2_3'
+  Proposed Method Perturbation Probability 0.4:
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.4_1'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.4_2'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.4_3'
+  Proposed Method Perturbation Probability 0.8:
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.8_1'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.8_2'
+      - 'saved_models/done value coef 0.25/coin2_ac_reward_0.8_3'
   SEAC:
       - 'saved_models/coin_2/coin_gather_2_seac'
 plt_title: "Two Agents with Locally Ineffective Levers"

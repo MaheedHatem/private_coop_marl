@@ -45,6 +45,8 @@ class Config:
         if self.agent == 'ACAgent' or self.agent == 'ACRewardAgent':
             self.value_coef = controller_data['value_coef']
             self.entropy_coef = controller_data['entropy_coef']
+            if self.reward_sharing:
+                self.other_value_coef = controller_data['other_value_coef']
         else:
             self.init_epsilon = controller_data['init_epsilon']
             self.final_epsilon = controller_data['final_epsilon']

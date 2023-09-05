@@ -11,7 +11,7 @@ class ACAgent(BaseAgent):
             config, rng = None):
                 super().__init__(name, obs_dim, act_dim, config, rng)
                 self.critic = get_model(obs_dim, config.hidden_layers + [1], cnn=config.cnn).to(self.config.device)
-                self.actor = CategoricalModel(obs_dim, config.hidden_layers + [act_dim])
+                self.actor = CategoricalModel(obs_dim, config.hidden_layers + [act_dim]).to(self.config.device)
                 self.optimizer = torch.optim.Adam(chain(self.critic.parameters(), self.actor.parameters()), self.config.lr, eps=config.adam_eps)
                 self.val_coef = config.value_coef
                 self.entropy_coef = config.entropy_coef
@@ -20,12 +20,12 @@ class ACAgent(BaseAgent):
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
             dist = self.actor.get_distribution(obs)
-            return dist.sample().detach().numpy()
+            return dist.sample().detach().cpu().numpy()
     
     def get_value(self, obs):
         with torch.no_grad():
             obs = torch.as_tensor(obs, dtype=torch.float32).to(self.config.device)
-            return self.critic(obs).detach().numpy()
+            return self.critic(obs).detach().cpu().numpy()
 
     def insert_experience(self, obs, act, 
             next_obs, reward, done, truncated, sample_id):
@@ -43,37 +43,30 @@ class ACAgent(BaseAgent):
             std = 1
         return (adv - torch.mean(adv))/std
 
-    def critic_loss(self, critic, batches, use_other_ret = False):
-        advantages = []
-        loss = 0
-        for batch in batches:
-            batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
-            obs, act, rewards, ret, other_ret = batch
-            batch_idx = torch.arange(len(act)).long()
-            if use_other_ret:
-                ret = other_ret
-            adv = ret - critic(obs)
-            loss += ((adv)**2).mean()
-            advantages.append(adv.detach())
-        return loss, advantages
+    def critic_loss(self, critic, data, use_other_ret = False):
+        obs, act, rewards, ret, other_ret = data
+        if use_other_ret:
+            ret = other_ret
+        adv = ret - critic(obs)
+        loss = ((adv)**2).mean()
+        return loss, adv.detach()
 
-    def actor_loss(self, actor, batches, advantages):
-        loss = 0
-        for batch, adv in zip(batches, advantages):
-            batch = tuple(torch.as_tensor(data).to(self.config.device) for data in batch)
-            obs, act, rewards, ret, _ = batch
-            batch_idx = torch.arange(len(act)).long()
-            act_prob, entropy = actor.get_act_prob(obs, act)
-            loss += -(adv*act_prob).mean() - self.entropy_coef * entropy
-        return loss
+    def actor_loss(self, actor, data, advantages):
+        
+        obs, act, _, _, _ = data
+        batch_idx = torch.arange(len(act)).long()
+        act_prob, entropy = actor.get_act_prob(obs, act)
+        loss = -(advantages*act_prob).mean()
+        return loss, entropy
 
     def train(self, number_of_batches, step):
-        batches = self.replay.get_data()
+        data = self.replay.get_data()
+        data = tuple(torch.as_tensor(d).to(self.config.device) for d in data)
         self.optimizer.zero_grad()
-        critic_loss, adv = self.train_critic(self.critic, batches)
-        adv = [self.normalize(a) for a in adv]
-        actor_loss = self.train_actor(self.actor, batches, adv)
-        loss = self.val_coef * critic_loss + actor_loss
+        critic_loss, adv = self.train_critic(self.critic, data)
+        adv = self.normalize(adv)
+        actor_loss, entropy = self.train_actor(self.actor, data, adv)
+        loss = self.val_coef * critic_loss + actor_loss - self.entropy_coef * entropy
         loss.backward()
         nn.utils.clip_grad_norm_(self.critic.parameters(), self.max_grad_norm)
         nn.utils.clip_grad_norm_(self.actor.parameters(), self.max_grad_norm)
