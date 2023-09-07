@@ -1,6 +1,6 @@
 replay_size: &replay_size 100
 gamma: 0.99
-lr: &lr_val 3.0e-4
+lr: &lr_val 1.0e-4
 train_every: *replay_size
 train_batches: 1
 update_after: 1000
@@ -29,4 +29,4 @@ trajectory_database: 10000
 reward_weighting: 0.5
 other_value_coef: 0.5
 
-#update_predictor_fraction: 0.2
+update_predictor_fraction: 0.2
