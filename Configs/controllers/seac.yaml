@@ -1,17 +1,17 @@
-replay_size: 100
+replay_size: 20
 gamma: 0.99
 lr: &lr_val 3.0e-4
-train_every: 100
+train_every: 20
 train_batches: 1
-update_after: 1000
-batch_size: 100
+update_after: 20
+batch_size: 20
 value_coef: 0.5
 entropy_coef: 0.01
 max_grad_norm: 0.5
-adam_eps: 1.0e-4
+adam_eps: 1.0e-3
 
-controller: 'CentralizedController'
-agent: 'ACAgent'
+controller: 'DecentralizedController'
+agent: 'SEACAgent'
 true_reward: False
 use_full_obs: False
 device: 'cpu'

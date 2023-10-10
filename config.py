@@ -42,7 +42,7 @@ class Config:
         self.steps_per_epoch = env_data['steps_per_epoch']
         self.update_predictor_steps = int(controller_data.get('update_predictor_fraction', 1) * self.total_steps)
         self.adam_eps = controller_data['adam_eps']
-        if self.agent == 'ACAgent' or self.agent == 'ACRewardAgent':
+        if self.agent == 'ACAgent' or self.agent == 'ACRewardAgent' or self.agent == 'SEACAgent':
             self.value_coef = controller_data['value_coef']
             self.entropy_coef = controller_data['entropy_coef']
             if self.reward_sharing:

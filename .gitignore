@@ -164,6 +164,8 @@ cython_debug/
 saved_models/
 *.png
 *.txt
+jobs_output/
+*.sub
 
 #Allow gym env
 !Environments/CoinGather/env/

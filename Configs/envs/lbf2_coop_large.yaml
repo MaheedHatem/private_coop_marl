@@ -4,7 +4,7 @@ env_args:
   max_episode_steps: 25
 max_food: 2
 coop: "-coop"
-grid_size: 8
+grid_size: 10
 eval_episodes: 2
 total_steps: 150000000
 steps_per_epoch: 50000

@@ -1,0 +1,9 @@
+env_name_index: 1
+N_agents: 3
+grid_size: 15
+env_args: 
+  max_episode_steps: 25
+max_food: 4
+eval_episodes: 2
+total_steps: 50000000
+steps_per_epoch: 50000

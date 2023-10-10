@@ -41,6 +41,7 @@ class ReplayBuffer():
         self.other_ret = np.zeros((max_size, num_parallel))
         self.sample_id = np.zeros(
             (trajectory_buffer_size, num_parallel), dtype=np.int32)
+        self.logp = np.zeros((max_size, num_parallel), dtype=np.int64)
         self.path_start = 0
 
     def insert_other_reward(self, reward):
@@ -51,6 +52,9 @@ class ReplayBuffer():
 
     def insert_other_val(self, other_val):
         self.other_val[self.cur] = np.squeeze(other_val)
+
+    def insert_logp(self, logp):
+        self.logp[self.cur] = logp
 
     def insert(self, obs, act,
                next_obs, reward, done, truncated, sample_id):
@@ -84,6 +88,15 @@ class ReplayBuffer():
         self.compute_returns()
         data = (self.obs, self.act, self.rewards,
                 self.ret, self.other_ret)
+        data = tuple([self.remove_processes_dimension(dat, 1)
+                      for dat in data])
+        return data
+
+    def get_seac_data(self):
+        assert self.cur == 0
+        self.compute_returns()
+        data = (self.obs, self.act, self.rewards,
+                self.ret, self.logp)
         data = tuple([self.remove_processes_dimension(dat, 1)
                       for dat in data])
         return data

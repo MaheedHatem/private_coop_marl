@@ -54,7 +54,6 @@ class ACAgent(BaseAgent):
     def actor_loss(self, actor, data, advantages):
         
         obs, act, _, _, _ = data
-        batch_idx = torch.arange(len(act)).long()
         act_prob, entropy = actor.get_act_prob(obs, act)
         loss = -(advantages*act_prob).mean()
         return loss, entropy

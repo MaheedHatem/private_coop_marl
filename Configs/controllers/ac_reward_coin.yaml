@@ -19,7 +19,7 @@ hidden_layers: &hidden [64, 64]
 
 reward_hidden_layers: *hidden
 N_predictors: 3
-perturb_prob: 0.8
+perturb_prob: 0.0
 reward_lr: *lr_val
 
 trajectory_length: 10

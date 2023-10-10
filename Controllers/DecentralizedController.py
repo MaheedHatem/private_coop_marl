@@ -23,6 +23,12 @@ class DecentralizedController(BaseController):
         if self.reward_sharing:
             self.trajectory_server = TrajectoryServer(config, self.agents, rng)
             self.reward_weighting = config.reward_weighting
+        if(config.agent == "SEACAgent"):
+            buffers = {}
+            for name in self.names:
+                buffers[name] = self.agents[name].get_replay()
+            for cur_name in self.names:
+                self.agents[cur_name].init_buffer_list([buffers[name] for name in self.names if name != cur_name])
         self.true_reward = config.true_reward
         self.update_predictor_steps = config.update_predictor_steps
 
