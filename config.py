@@ -1,7 +1,6 @@
-import lbforaging
 import gym
 import coin_gathering.coin_gathering
-from misc.wrappers import TimeLimit, SplitAgentsDataWrapper, SquashDones
+from misc.wrappers import *
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 import yaml
 import json
@@ -63,21 +62,17 @@ class Config:
         env_name_index = env_data['env_name_index']
         self.N_agents = env_data['N_agents']
         self.env_args = env_data['env_args']
-        self.max_episode_steps = self.env_args['max_episode_steps']
         self.preprocess_action = lambda act: act
         if env_name_index == 0:
-            self.single_env = lambda **args: TimeLimit(gym.make(
-                'gym_cpr_grid:CPRGridEnv-v0', 
-                    **args
-                ), self.max_episode_steps)
+            self.max_episode_steps = env_data['max_episode_steps']
+            def _cpr_env(**args):
+                return FlattenObservation(CPRWrapper(TimeLimit(gym.make('gym_cpr_grid:CPRGridEnv-v0', **args), self.max_episode_steps)))
+            self.single_env = lambda **args: _cpr_env(**args)
             self.get_act_space = lambda env, names: {name: env.action_space.n for name in names}
-            self.get_obs_space = lambda env, names: {name: env.observation_space.shape for name in names}
-            # self.env_args = {'n_agents':self.N_agents, 'grid_width':25, 'grid_height':7, 'fov_squares_front':5, 'fov_squares_side':2,
-            #     #'global_obs':True,
-            #     'initial_resource_probability':0.2}
-            # self.hidden_layers = [6]
-            # self.cnn = [(3, 6, 3)]
+            self.get_obs_space = lambda env, names: {name: env.observation_space[i].shape for i,name in enumerate(names)}
         elif env_name_index == 1:
+            import lbforaging
+            self.max_episode_steps = self.env_args['max_episode_steps']
             self.max_food = env_data['max_food']
             coop = env_data.get('coop', '')
             grid_size = env_data['grid_size']
@@ -85,10 +80,13 @@ class Config:
                 f'Foraging-{grid_size}x{grid_size}-{self.N_agents}p-{self.max_food}f{coop}-v2', 
                     **args
                 ), self.max_episode_steps)
+            self.get_act_space = lambda env, names: {name: env.action_space[name].n for name in names}
+            self.get_obs_space = lambda env, names: {name: env.observation_space[name].shape for name in names}
         else:
+            self.max_episode_steps = self.env_args['max_episode_steps']
             self.single_env = lambda **args: TimeLimit(gym.make('CoinGathering-v0', **args), self.max_episode_steps)
-        self.get_act_space = lambda env, names: {name: env.action_space[name].n for name in names}
-        self.get_obs_space = lambda env, names: {name: env.observation_space[name].shape for name in names}
+            self.get_act_space = lambda env, names: {name: env.action_space[name].n for name in names}
+            self.get_obs_space = lambda env, names: {name: env.observation_space[name].shape for name in names}
         self.get_agents_names = lambda env: [i for i in range(self.N_agents)]
         self.eval_episodes = env_data['eval_episodes']
         def _create_env(seed=seed, **args):

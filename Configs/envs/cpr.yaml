@@ -1,0 +1,12 @@
+env_name_index: 0
+N_agents: &n_agents 5
+env_args:
+  n_agents: *n_agents
+  grid_width: 21
+  grid_height: 11
+  fov_squares_front: 11
+  fov_squares_side: 5
+max_episode_steps: 1000
+total_steps: 5000000
+steps_per_epoch: 10000
+eval_episodes: 0
