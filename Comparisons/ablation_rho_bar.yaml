@@ -1,0 +1,26 @@
+results_dirs :
+  0.0:
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.0_1'
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.0_2'
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.0_3'
+  0.25:
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.25_1'
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.25_2'
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.25_3'
+  0.5:
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.5_1'
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.5_2'
+      - 'saved_models/ablation/coin2_ac_reward_rho_0.5_3'
+  1.0:
+      - 'saved_models/ablation/coin2_ac_reward_rho_1_1'
+      - 'saved_models/ablation/coin2_ac_reward_rho_1_2'
+      - 'saved_models/ablation/coin2_ac_reward_rho_1_3'
+  2.0:
+      - 'saved_models/ablation/coin2_ac_reward_rho_2_1'
+      - 'saved_models/ablation/coin2_ac_reward_rho_2_2'
+      - 'saved_models/ablation/coin2_ac_reward_rho_2_3'
+plt_title: "Two Agents with Locally Ineffective Levers"
+x_label: \$\rho\$
+y_label: "Average Total Returns"
+column: 1
+bar: True

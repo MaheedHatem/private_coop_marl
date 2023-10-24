@@ -163,6 +163,7 @@ cython_debug/
 # Saved data
 saved_models/
 *.png
+*.svg
 *.txt
 jobs_output/
 *.sub

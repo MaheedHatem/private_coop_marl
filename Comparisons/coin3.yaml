@@ -1,13 +1,25 @@
 results_dirs :
-  Proposed Method:
-      - 'saved_models/coin_2/coin_gather_3_DecentralizedController_DQNRewardAgent_0.0_0.7'
-  Decentralized: 
-      - 'saved_models/coin_2/coin_gather_3_DecentralizedController_DQNAgent'
+  IAC:
+      - 'saved_models/done/coin3_ac_dec_1'
+      - 'saved_models/done/coin3_ac_dec_2'
+      - 'saved_models/done/coin3_ac_dec_3'
   SEAC:
-      - 'saved_models/coin_2/coin_gather_3_seac'
-  # Centralized: 
-  #     - 'saved_models/coin_2/coin_gather_3_CentralizedController_DQNAgent'
-plt_title: "Three Agents"
+      - 'saved_models/done/coin3_seac_1'
+      - 'saved_models/done/coin3_seac_2'
+      - 'saved_models/done/coin3_seac_3'
+  PPDAC(\$\zeta\$=0):
+      - 'saved_models/done/coin3_ac_reward_1'
+      - 'saved_models/done/coin3_ac_reward_2'
+      - 'saved_models/done/coin3_ac_reward_3'
+  PPDAC(\$\zeta\$=0.2):
+      - 'saved_models/done/coin3_ac_reward_0.2_1'
+      - 'saved_models/done/coin3_ac_reward_0.2_2'
+      - 'saved_models/done/coin3_ac_reward_0.2_3'
+  PPDAC(\$\zeta\$=0.4):
+      - 'saved_models/done/coin3_ac_reward_0.4_1'
+      - 'saved_models/done/coin3_ac_reward_0.4_2'
+      - 'saved_models/done/coin3_ac_reward_0.4_3'
+plt_title: "Three Agents with Four Levers"
 column: 1
-x_label: "Training step"
-y_label: "Average returns of all agents"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"

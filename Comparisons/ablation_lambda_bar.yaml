@@ -1,0 +1,54 @@
+results_dirs :
+  0:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.0_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.0_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.0_3'
+  0.1:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.1_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.1_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.1_3'
+  0.2:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.2_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.2_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.2_3'
+  0.3:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.3_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.3_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.3_3'
+  0.4:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.4_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.4_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.4_3'
+  0.5:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.5_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.5_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.5_3'
+  0.6:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.6_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.6_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.6_3'
+  0.7:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.7_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.7_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.7_3'
+  0.8:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.8_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.8_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.8_3'
+  0.9:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.9_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.9_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.9_3'
+  1.0:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_1.0_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_1.0_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_1.0_3'
+  2.0:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_2.0_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_2.0_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_2.0_3'
+plt_title: "Two Agents with Locally Ineffective Levers"
+x_label: \$\lambda\$
+y_label: "Average Total Returns"
+column: 1
+bar: True

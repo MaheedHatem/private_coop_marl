@@ -1,20 +1,20 @@
 results_dirs :
-  Proposed Method:
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_1'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_2'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done_3'
-  Proposed Method zeta = 0.2: 
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_1'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_2'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.2_0.7_done_3'
-  Proposed Method zeta = 0.4: 
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.4_0.7_done_1'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.4_0.7_done_2'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.4_0.7_done_3'
-  Proposed Method zeta = 0.8: 
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_1'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_2'
-      - 'saved_models/coin_2/coin_gather_2_DecentralizedController_DQNRewardAgent_0.8_0.7_done_3'
+  PPDAC(\$\zeta\$=0):
+      - 'saved_models/done/coin2_ac_reward_0.0_1'
+      - 'saved_models/done/coin2_ac_reward_0.0_2'
+      - 'saved_models/done/coin2_ac_reward_0.0_3'
+  PPDAC(\$\zeta\$=0.2):
+      - 'saved_models/done/coin2_ac_reward_0.2_1'
+      - 'saved_models/done/coin2_ac_reward_0.2_2'
+      - 'saved_models/done/coin2_ac_reward_0.2_3'
+  PPDAC(\$\zeta\$=0.4):
+      - 'saved_models/done/coin2_ac_reward_0.4_1'
+      - 'saved_models/done/coin2_ac_reward_0.4_2'
+      - 'saved_models/done/coin2_ac_reward_0.4_3'
+  PPDAC(\$\zeta\$=0.8):
+      - 'saved_models/done/coin2_ac_reward_0.8_1'
+      - 'saved_models/done/coin2_ac_reward_0.8_2'
+      - 'saved_models/done/coin2_ac_reward_0.8_3'
 plt_title: "Two Agents with Locally Ineffective Levers"
-x_label: "Training step"
-y_label: "Average returns of all agents"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"

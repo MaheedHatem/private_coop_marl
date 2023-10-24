@@ -1,0 +1,25 @@
+results_dirs :
+  0:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.0_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.0_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.0_3'
+  0.5:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.5_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.5_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.5_3'
+  0.7:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.7_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.7_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_0.7_3'
+  1.0:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_1.0_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_1.0_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_1.0_3'
+  2.0:
+      - 'saved_models/ablation/coin2_ac_reward_lambda_2.0_1'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_2.0_2'
+      - 'saved_models/ablation/coin2_ac_reward_lambda_2.0_3'
+plt_title: "Two Agents with Locally Ineffective Levers"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"
+column: 1

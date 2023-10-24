@@ -1,0 +1,23 @@
+results_dirs :
+  IAC:
+      - 'saved_models/done/lbf3_4_ac_dec_1'
+      - 'saved_models/done/lbf3_4_ac_dec_2'
+      - 'saved_models/done/lbf3_4_ac_dec_3'
+  SEAC:
+      - 'saved_models/done/lbf3_4_seac_1'
+      - 'saved_models/done/lbf3_4_seac_2'
+      - 'saved_models/done/lbf3_4_seac_3'
+  PPDAC(\$\zeta\$=0):
+      - 'saved_models/done/lbf3_4_ac_reward_0.0_1'
+      - 'saved_models/done/lbf3_4_ac_reward_0.0_2'
+      - 'saved_models/done/lbf3_4_ac_reward_0.0_3'
+  PPDAC(\$\zeta\$=0.2):
+      - 'saved_models/done/lbf3_4_ac_reward_0.2_1'
+      - 'saved_models/done/lbf3_4_ac_reward_0.2_2'
+      - 'saved_models/done/lbf3_4_ac_reward_0.2_3'
+    
+plt_title: "Three Agents with Four Foods"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"
+column: 1
+#loc: [0.35, 0.1]

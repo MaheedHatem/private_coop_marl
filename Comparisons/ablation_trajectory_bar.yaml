@@ -1,0 +1,30 @@
+results_dirs :
+  1:
+      - 'saved_models/ablation/coin2_ac_reward_traj_1_1'
+      - 'saved_models/ablation/coin2_ac_reward_traj_1_2'
+      - 'saved_models/ablation/coin2_ac_reward_traj_1_3'
+  5:
+      - 'saved_models/ablation/coin2_ac_reward_traj_5_1'
+      - 'saved_models/ablation/coin2_ac_reward_traj_5_2'
+      - 'saved_models/ablation/coin2_ac_reward_traj_5_3'
+  10:
+      - 'saved_models/ablation/coin2_ac_reward_traj_10_1'
+      - 'saved_models/ablation/coin2_ac_reward_traj_10_2'
+      - 'saved_models/ablation/coin2_ac_reward_traj_10_3'
+  15:
+      - 'saved_models/ablation/coin2_ac_reward_traj_15_1'
+      - 'saved_models/ablation/coin2_ac_reward_traj_15_2'
+      - 'saved_models/ablation/coin2_ac_reward_traj_15_3'
+  20:
+      - 'saved_models/ablation/coin2_ac_reward_traj_20_1'
+      - 'saved_models/ablation/coin2_ac_reward_traj_20_2'
+      - 'saved_models/ablation/coin2_ac_reward_traj_20_3'
+  50:
+      - 'saved_models/ablation/coin2_ac_reward_traj_50_1'
+      - 'saved_models/ablation/coin2_ac_reward_traj_50_2'
+      - 'saved_models/ablation/coin2_ac_reward_traj_50_3'
+plt_title: "Two Agents with Locally Ineffective Levers"
+x_label: "Trajectory Length"
+y_label: "Average Total Returns"
+column: 1
+bar: True

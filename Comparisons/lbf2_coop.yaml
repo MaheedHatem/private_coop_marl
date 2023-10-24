@@ -1,0 +1,31 @@
+results_dirs :
+  IAC:
+      - 'saved_models/done/lbf2_coop_ac_dec_1'
+      - 'saved_models/done/lbf2_coop_ac_dec_2'
+      - 'saved_models/done/lbf2_coop_ac_dec_3'
+  SEAC:
+      - 'saved_models/done/lbf2_coop_seac_1'
+      - 'saved_models/done/lbf2_coop_seac_2'
+      - 'saved_models/done/lbf2_coop_seac_3'
+  PPDAC(\$\zeta\$=0):
+      - 'saved_models/done/lbf2_coop_ac_reward_1'
+      - 'saved_models/done/lbf2_coop_ac_reward_2'
+      - 'saved_models/done/lbf2_coop_ac_reward_3'
+  PPDAC(\$\zeta\$=0.2):
+      - 'saved_models/done/lbf2_coop_ac_reward_0.2_1'
+      - 'saved_models/done/lbf2_coop_ac_reward_0.2_2'
+      - 'saved_models/done/lbf2_coop_ac_reward_0.2_3'
+  PPDAC(\$\zeta\$=0.4):
+      - 'saved_models/done/lbf2_coop_ac_reward_0.4_1'
+      - 'saved_models/done/lbf2_coop_ac_reward_0.4_2'
+      - 'saved_models/done/lbf2_coop_ac_reward_0.4_3'
+#   Centralized AC:
+#       - 'saved_models/done/lbf2_coop_ac_central_1'
+#       - 'saved_models/done/lbf2_coop_ac_central_2'
+#       - 'saved_models/done/lbf2_coop_ac_central_3'
+    
+plt_title: "Two Agents with Two Foods (Cooperative)"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"
+column: 1
+loc: [0.35, 0.1]

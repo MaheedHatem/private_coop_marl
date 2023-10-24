@@ -1,0 +1,14 @@
+results_dirs :
+  IAC:
+      - 'saved_models/done/cpr_ac_dec_1'
+      - 'saved_models/done/cpr_ac_dec_2'
+      - 'saved_models/done/cpr_ac_dec_3'
+  PPDAC:
+      - 'saved_models/done/cpr_ac_reward_1'
+      - 'saved_models/done/cpr_ac_reward_2'
+      - 'saved_models/done/cpr_ac_reward_3'
+
+plt_title: "Five Agents in the CPR harvest environment"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"
+column: 1

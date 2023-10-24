@@ -1,0 +1,10 @@
+results_dirs :
+
+  PPDAC(\$\zeta\$=0):
+      - 'saved_models/ablation/coin5_ac_reward_1'
+  PPDAC(\$\zeta\$=0.2):
+      - 'saved_models/ablation/coin5_ac_reward_2'
+plt_title: "Five Agents with Locally Ineffective Levers"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"
+column: 1

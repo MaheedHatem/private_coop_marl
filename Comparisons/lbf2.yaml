@@ -1,16 +1,26 @@
 results_dirs :
-  Proposed Method:
-      - 'saved_models/lbf_2_DecentralizedController_DQNRewardAgent_0.0_0.7_done'
-  SEAC: 
-      - 'saved_models/lbf_2_seac'
-  IAC: 
-      - 'saved_models/lbf_2_DecentralizedController_ACAgent_done'
-  Decentralized: 
-      - 'saved_models/lbf_2_DecentralizedController_DQNAgent_done'
-  Centralized: 
-      - 'saved_models/lbf_2_CentralizedController_DQNAgent_done'
-  Proposed AC: 
-      - 'saved_models/lbf_2_DecentralizedController_ACRewardAgent_0.0_0.5'
+  IAC:
+      - 'saved_models/done/lbf2_ac_dec_1'
+      - 'saved_models/done/lbf2_ac_dec_2'
+      - 'saved_models/done/lbf2_ac_dec_3'
+  SEAC:
+      - 'saved_models/done/lbf2_seac_1'
+      - 'saved_models/done/lbf2_seac_2'
+      - 'saved_models/done/lbf2_seac_3'
+  PPDAC(\$\zeta\$=0):
+      - 'saved_models/done/lbf2_ac_reward_0.0_1'
+      - 'saved_models/done/lbf2_ac_reward_0.0_2'
+      - 'saved_models/done/lbf2_ac_reward_0.0_3'
+#   Centralized AC:
+#       - 'saved_models/done/lbf2_ac_central_1'
+#       - 'saved_models/done/lbf2_ac_central_2'
+#       - 'saved_models/done/lbf2_ac_central_3'
+  PPDAC(\$\zeta\$=0.2):
+      - 'saved_models/done/lbf2_ac_reward_0.2_1'
+      - 'saved_models/done/lbf2_ac_reward_0.2_2'
+      - 'saved_models/done/lbf2_ac_reward_0.2_3'
 plt_title: "Two Agents with Two Foods"
-x_label: "Training step"
-y_label: "Average returns of all agents"
+x_label: "Environment Steps"
+y_label: "Average Total Returns"
+column: 1
+loc: [0.35, 0.1]
