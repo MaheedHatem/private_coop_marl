@@ -4,6 +4,7 @@ from misc.wrappers import *
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 import yaml
 import json
+import lbforaging
 
 def get_config(controller_config_file, env_config_file, num_parallel, save_directory, seed):
     with open(f"Configs/controllers/{controller_config_file}.yaml", "r") as f:
@@ -71,7 +72,6 @@ class Config:
             self.get_act_space = lambda env, names: {name: env.action_space.n for name in names}
             self.get_obs_space = lambda env, names: {name: env.observation_space[i].shape for i,name in enumerate(names)}
         elif env_name_index == 1:
-            import lbforaging
             self.max_episode_steps = self.env_args['max_episode_steps']
             self.max_food = env_data['max_food']
             coop = env_data.get('coop', '')
