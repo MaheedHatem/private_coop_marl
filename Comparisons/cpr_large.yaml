@@ -10,5 +10,5 @@ results_dirs :
 
 plt_title: "Ten Agents in the CPR harvest environment"
 x_label: "Environment Steps"
-y_label: "Average Total Returns"
-column: 17
+y_label: "Equality"
+column: 14

@@ -1,9 +1,21 @@
 results_dirs :
 
   PPDAC(\$\zeta\$=0):
-      - 'saved_models/ablation/coin5_ac_reward_1'
+      - 'saved_models/ablation/coin10_ac_reward_0.0_1'
+      - 'saved_models/ablation/coin10_ac_reward_0.0_2'
+      - 'saved_models/ablation/coin10_ac_reward_0.0_3'
   PPDAC(\$\zeta\$=0.2):
-      - 'saved_models/ablation/coin5_ac_reward_2'
+      - 'saved_models/ablation/coin10_ac_reward_0.2_1'
+      - 'saved_models/ablation/coin10_ac_reward_0.2_2'
+      #- 'saved_models/ablation/coin10_ac_reward_0.2_3'
+  PPDAC(\$\zeta\$=0.4):
+      - 'saved_models/ablation/coin10_ac_reward_0.4_1'
+      - 'saved_models/ablation/coin10_ac_reward_0.4_2'
+      - 'saved_models/ablation/coin10_ac_reward_0.4_3'
+  PPDAC (Determenistic Levers):
+      - 'saved_models/ablation/coin10_naive_ac_reward_0.0_1'
+      - 'saved_models/ablation/coin10_naive_ac_reward_0.0_2'
+      - 'saved_models/ablation/coin10_naive_ac_reward_0.0_3'
 plt_title: "Five Agents with Locally Ineffective Levers"
 x_label: "Environment Steps"
 y_label: "Average Total Returns"

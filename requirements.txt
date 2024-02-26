@@ -1,0 +1,9 @@
+Pillow==8.2.0
+torch==1.12.1
+torchvision==0.13.1
+torchaudio==0.12.1
+stable-baselines3==1.0
+gym==0.18.3
+PyYAML==5.4.1
+lbforaging==1.1.1
+ipython==8.16.1
